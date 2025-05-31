@@ -1,6 +1,7 @@
-@import "../index";
+@import '../index';
+@import '~@static/color.less'; // 手动引入[1](@ref)
 
-@trend-prefix-cls: ~"@{ant-pro-prefix}-trend";
+@trend-prefix-cls: ~'@{ant-pro-prefix}-trend';
 
 .@{trend-prefix-cls} {
   display: inline-block;
@@ -22,7 +23,7 @@
   .item-text {
     display: inline-block;
     margin-left: 8px;
-    color: rgba(0,0,0,.85);
+    color: rgba(0, 0, 0, 0.85);
   }
 
   .up {
@@ -40,3 +41,4 @@
     color: @red-6;
   }
 }
+

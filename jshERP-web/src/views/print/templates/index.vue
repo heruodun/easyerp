@@ -1,13 +1,13 @@
 <template>
   <a-card>
     <div class="templates">
-      <template v-for="(template, key) in templates">
-        <div class="item-box" :key="key" @click="show(template)">
+      <template v-for="(template, key) in templates" :key="key">
+        <div class="item-box" @click="show(template)">
           <a-popover v-if="template.preview">
             <template #content>
-              <img style="cursor: pointer" :src="template.preview" @click="show(template)"/>
+              <img style="cursor: pointer" :src="template.preview" @click="show(template)" />
             </template>
-            <img class="preview" :src="template.preview"/>
+            <img class="preview" :src="template.preview" />
           </a-popover>
           <div v-else class="preview">暂无预览图</div>
           <div class="name pd">{{ template.name }}</div>
@@ -18,7 +18,7 @@
         </div>
       </template>
     </div>
-    <template-preview ref="preview"/>
+    <template-preview ref="preview" />
   </a-card>
 </template>
 
@@ -27,8 +27,8 @@ import templates from './files'
 import templatePreview from './preview'
 
 export default {
-  name: "templates",
-  components: {templatePreview},
+  name: 'templates',
+  components: { templatePreview },
   data() {
     return {
       // templates
@@ -36,22 +36,24 @@ export default {
   },
   computed: {
     templates() {
-      const data = JSON.parse(JSON.stringify(templates));
+      const data = JSON.parse(JSON.stringify(templates))
       for (const key in data) {
         if (Object.hasOwnProperty.call(data, key)) {
-          data[key].preview = process.env.NODE_ENV === 'development' ? templates[key].preview : `/vue-plugin-hiprint${templates[key].preview}`
+          data[key].preview =
+            process.env.NODE_ENV === 'development'
+              ? templates[key].preview
+              : `/vue-plugin-hiprint${templates[key].preview}`
         }
       }
-      return data;
-    }
+      return data
+    },
   },
-  mounted() {
-  },
+  mounted() {},
   methods: {
     show(template) {
       this.$refs.preview.show(template)
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -106,3 +108,4 @@ export default {
   cursor: pointer;
 }
 </style>
+

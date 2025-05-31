@@ -1,4 +1,4 @@
-import Vue from 'vue'
+// import Vue from 'vue'
 import { axios } from '@/utils/request'
 
 const api = {
@@ -7,53 +7,53 @@ const api = {
   service: '/api/service',
   permission: '/api/permission',
   permissionNoPager: '/api/permission/no-pager',
-  exportExcelByParam: '/systemConfig/exportExcelByParam'
+  exportExcelByParam: '/systemConfig/exportExcelByParam',
 }
 
 export default api
 
 //post
-export function postAction(url,parameter) {
+export function postAction(url, parameter) {
   return axios({
     url: url,
-    method:'post' ,
-    data: parameter
+    method: 'post',
+    data: parameter,
   })
 }
 
 //post method= {post | put}
-export function httpAction(url,parameter,method) {
+export function httpAction(url, parameter, method) {
   return axios({
     url: url,
-    method:method ,
-    data: parameter
+    method: method,
+    data: parameter,
   })
 }
 
 //put
-export function putAction(url,parameter) {
+export function putAction(url, parameter) {
   return axios({
     url: url,
-    method:'put',
-    data: parameter
+    method: 'put',
+    data: parameter,
   })
 }
 
 //get
-export function getAction(url,parameter) {
+export function getAction(url, parameter) {
   return axios({
     url: url,
     method: 'get',
-    params: parameter
+    params: parameter,
   })
 }
 
 //deleteAction
-export function deleteAction(url,parameter) {
+export function deleteAction(url, parameter) {
   return axios({
     url: url,
     method: 'delete',
-    params: parameter
+    params: parameter,
   })
 }
 
@@ -61,7 +61,7 @@ export function getUserList(parameter) {
   return axios({
     url: api.user,
     method: 'get',
-    params: parameter
+    params: parameter,
   })
 }
 
@@ -69,7 +69,7 @@ export function getRoleList(parameter) {
   return axios({
     url: api.role,
     method: 'get',
-    params: parameter
+    params: parameter,
   })
 }
 
@@ -77,7 +77,7 @@ export function getServiceList(parameter) {
   return axios({
     url: api.service,
     method: 'get',
-    params: parameter
+    params: parameter,
   })
 }
 
@@ -85,7 +85,7 @@ export function getPermissions(parameter) {
   return axios({
     url: api.permissionNoPager,
     method: 'get',
-    params: parameter
+    params: parameter,
   })
 }
 
@@ -95,7 +95,7 @@ export function saveService(parameter) {
   return axios({
     url: api.service,
     method: parameter.id == 0 ? 'post' : 'put',
-    data: parameter
+    data: parameter,
   })
 }
 
@@ -105,12 +105,12 @@ export function saveService(parameter) {
  * @param parameter
  * @returns {*}
  */
-export function downFile(url,parameter){
+export function downFile(url, parameter) {
   return axios({
     url: url,
     params: parameter,
     method: 'get',
-    responseType: 'blob'
+    responseType: 'blob',
   })
 }
 
@@ -120,12 +120,12 @@ export function downFile(url,parameter){
  * @param parameter
  * @returns {*}
  */
-export function downFilePost(parameter){
+export function downFilePost(parameter) {
   return axios({
     url: api.exportExcelByParam,
     data: parameter,
     method: 'post',
-    responseType: 'blob'
+    responseType: 'blob',
   })
 }
 
@@ -135,13 +135,13 @@ export function downFilePost(parameter){
  * @param parameter
  * @returns {*}
  */
-export function uploadAction(url,parameter){
+export function uploadAction(url, parameter) {
   return axios({
     url: url,
     data: parameter,
-    method:'post' ,
+    method: 'post',
     headers: {
-      'Content-Type': 'multipart/form-data',  // 文件上传
+      'Content-Type': 'multipart/form-data', // 文件上传
     },
   })
 }
@@ -152,13 +152,13 @@ export function uploadAction(url,parameter){
  * @param subStr
  * @returns {*}
  */
-export function getFileAccessHttpUrl(avatar,subStr) {
-  if(!subStr) subStr = 'http'
-  if(avatar && avatar.startsWith(subStr)){
-    return avatar;
-  }else{
-    if(avatar &&　avatar.length>0 && avatar.indexOf('[')==-1){
-      return window._CONFIG['domianURL'] + "/" + avatar;
+export function getFileAccessHttpUrl(avatar, subStr) {
+  if (!subStr) subStr = 'http'
+  if (avatar && avatar.startsWith(subStr)) {
+    return avatar
+  } else {
+    if (avatar && avatar.length > 0 && avatar.indexOf('[') == -1) {
+      return window._CONFIG['domianURL'] + '/' + avatar
     }
   }
 }

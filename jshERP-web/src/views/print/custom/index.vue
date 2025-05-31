@@ -6,8 +6,8 @@
         <a-space>
           <!-- 纸张设置 -->
           <a-button-group>
-            <template v-for="(value, type) in paperTypes">
-              <a-button :type="curPaperType === type ? 'primary' : 'info'" @click="setPaper(type, value)" :key="type">
+            <template v-for="(value, type) in paperTypes" :key="type">
+              <a-button :type="curPaperType === type ? 'primary' : 'info'" @click="setPaper(type, value)">
                 {{ type }}
               </a-button>
             </template>
@@ -104,7 +104,7 @@ import printPreview from './preview'
 import jsonView from '../json-view.vue'
 import { hiprint } from 'vue-plugin-hiprint'
 import providers from './providers'
-import { ASpace } from 'ant-design-vue'
+import { h } from 'vue'
 import {
   findBillPrintTemplate,
   upsertBillPrintTemplate,
@@ -121,7 +121,7 @@ let hiprintTemplate
 export default {
   name: 'printCustom',
 
-  components: { printPreview, jsonView, 'a-space': ASpace },
+  components: { printPreview, jsonView },
   data() {
     return {
       model: {},
@@ -324,21 +324,30 @@ export default {
       }
       this.$error({
         title: '客户端未连接',
-        content: (h) => (
-          <div>
-            连接【{hiwebSocket.host}】失败！
-            <br />
-            请确保目标服务器已
-            <a href="https://gitee.com/CcSimple/electron-hiprint/releases" target="_blank">
-              下载
-            </a>
-            并
-            <a href="hiprint://" target="_blank">
-              运行
-            </a>
-            打印服务！
-          </div>
-        ),
+        content: () =>
+          h('div', [
+            `连接【${hiwebSocket.value.host}】失败！`, // 使用模板字符串插入变量
+            h('br'),
+            '请确保目标服务器已',
+            h(
+              'a',
+              {
+                href: 'https://gitee.com/CcSimple/electron-hiprint/releases',
+                target: '_blank',
+              },
+              '下载'
+            ),
+            '并',
+            h(
+              'a',
+              {
+                href: 'hiprint://',
+                target: '_blank',
+              },
+              '运行'
+            ),
+            '打印服务！',
+          ]),
       })
     },
     async save() {

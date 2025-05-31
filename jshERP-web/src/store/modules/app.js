@@ -1,4 +1,4 @@
-import Vue from 'vue'
+import ls from '@/utils/storage' // 新增：导入封装的存储实例
 import {
   SIDEBAR_TYPE,
   DEFAULT_THEME,
@@ -9,14 +9,14 @@ import {
   DEFAULT_FIXED_SIDEMENU,
   DEFAULT_FIXED_HEADER_HIDDEN,
   DEFAULT_CONTENT_WIDTH_TYPE,
-  DEFAULT_MULTI_PAGE
-} from "@/store/mutation-types"
+  DEFAULT_MULTI_PAGE,
+} from '@/store/mutation-types'
 
 const app = {
   state: {
     sidebar: {
       opened: true,
-      withoutAnimation: false
+      withoutAnimation: false,
     },
     device: 'desktop',
     theme: '',
@@ -27,15 +27,15 @@ const app = {
     autoHideHeader: false,
     color: null,
     weak: false,
-    multipage: true //默认多页签模式
+    multipage: true, //默认多页签模式
   },
   mutations: {
     SET_SIDEBAR_TYPE: (state, type) => {
       state.sidebar.opened = type
-      Vue.ls.set(SIDEBAR_TYPE, type)
+      ls.set(SIDEBAR_TYPE, type)
     },
     CLOSE_SIDEBAR: (state, withoutAnimation) => {
-      Vue.ls.set(SIDEBAR_TYPE, true)
+      ls.set(SIDEBAR_TYPE, true)
       state.sidebar.opened = false
       state.sidebar.withoutAnimation = withoutAnimation
     },
@@ -44,41 +44,41 @@ const app = {
     },
     TOGGLE_THEME: (state, theme) => {
       // setStore('_DEFAULT_THEME', theme)
-      Vue.ls.set(DEFAULT_THEME, theme)
+      ls.set(DEFAULT_THEME, theme)
       state.theme = theme
     },
     TOGGLE_LAYOUT_MODE: (state, layout) => {
-      Vue.ls.set(DEFAULT_LAYOUT_MODE, layout)
+      ls.set(DEFAULT_LAYOUT_MODE, layout)
       state.layout = layout
     },
     TOGGLE_FIXED_HEADER: (state, fixed) => {
-      Vue.ls.set(DEFAULT_FIXED_HEADER, fixed)
+      ls.set(DEFAULT_FIXED_HEADER, fixed)
       state.fixedHeader = fixed
     },
     TOGGLE_FIXED_SIDERBAR: (state, fixed) => {
-      Vue.ls.set(DEFAULT_FIXED_SIDEMENU, fixed)
+      ls.set(DEFAULT_FIXED_SIDEMENU, fixed)
       state.fixSiderbar = fixed
     },
     TOGGLE_FIXED_HEADER_HIDDEN: (state, show) => {
-      Vue.ls.set(DEFAULT_FIXED_HEADER_HIDDEN, show)
+      ls.set(DEFAULT_FIXED_HEADER_HIDDEN, show)
       state.autoHideHeader = show
     },
     TOGGLE_CONTENT_WIDTH: (state, type) => {
-      Vue.ls.set(DEFAULT_CONTENT_WIDTH_TYPE, type)
+      ls.set(DEFAULT_CONTENT_WIDTH_TYPE, type)
       state.contentWidth = type
     },
     TOGGLE_COLOR: (state, color) => {
-      Vue.ls.set(DEFAULT_COLOR, color)
+      ls.set(DEFAULT_COLOR, color)
       state.color = color
     },
     TOGGLE_WEAK: (state, flag) => {
-      Vue.ls.set(DEFAULT_COLOR_WEAK, flag)
+      ls.set(DEFAULT_COLOR_WEAK, flag)
       state.weak = flag
     },
-    SET_MULTI_PAGE (state, multipageFlag) {
-      Vue.ls.set(DEFAULT_MULTI_PAGE, multipageFlag)
+    SET_MULTI_PAGE(state, multipageFlag) {
+      ls.set(DEFAULT_MULTI_PAGE, multipageFlag)
       state.multipage = multipageFlag
-    }
+    },
   },
   actions: {
     setSidebar: ({ commit }, type) => {
@@ -103,7 +103,7 @@ const app = {
       commit('TOGGLE_FIXED_HEADER', fixedHeader)
     },
     ToggleFixSiderbar({ commit }, fixSiderbar) {
-      commit( 'TOGGLE_FIXED_SIDERBAR', fixSiderbar)
+      commit('TOGGLE_FIXED_SIDERBAR', fixSiderbar)
     },
     ToggleFixedHeaderHidden({ commit }, show) {
       commit('TOGGLE_FIXED_HEADER_HIDDEN', show)
@@ -119,8 +119,8 @@ const app = {
     },
     ToggleMultipage({ commit }, multipageFlag) {
       commit('SET_MULTI_PAGE', multipageFlag)
-    }
-  }
+    },
+  },
 }
 
 export default app

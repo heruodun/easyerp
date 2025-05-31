@@ -1,3 +1,10 @@
+import VueStorage from 'vue-ls'
+import config from '@/defaultSettings'
+
+// 创建独立存储实例
+const { ls } = VueStorage.useStorage(config.storageOptions)
+export default ls
+
 /**
  * Set storage
  *
@@ -7,7 +14,7 @@
  */
 export const setStore = (name, content, maxAge = null) => {
   if (!global.window || !name) {
-    return;
+    return
   }
 
   if (typeof content !== 'string') {
@@ -21,7 +28,7 @@ export const setStore = (name, content, maxAge = null) => {
     let timeout = parseInt(new Date().getTime() / 1000)
     storage.setItem(`${name}_expire`, timeout + maxAge)
   }
-};
+}
 
 /**
  * Get storage
@@ -29,9 +36,9 @@ export const setStore = (name, content, maxAge = null) => {
  * @param name
  * @returns {*}
  */
-export const getStore = name => {
+export const getStore = (name) => {
   if (!global.window || !name) {
-    return;
+    return
   }
 
   let content = window.localStorage.getItem(name)
@@ -40,7 +47,7 @@ export const getStore = name => {
   if (_expire) {
     let now = parseInt(new Date().getTime() / 1000)
     if (now > _expire) {
-      return;
+      return
     }
   }
 
@@ -49,28 +56,28 @@ export const getStore = name => {
   } catch (e) {
     return content
   }
-};
+}
 
 /**
  * Clear storage
  *
  * @param name
  */
-export const clearStore = name => {
+export const clearStore = (name) => {
   if (!global.window || !name) {
-    return;
+    return
   }
 
   window.localStorage.removeItem(name)
   window.localStorage.removeItem(`${name}_expire`)
-};
+}
 
 /**
  * Clear all storage
  */
 export const clearAll = () => {
   if (!global.window || !name) {
-    return;
+    return
   }
 
   window.localStorage.clear()
