@@ -178,6 +178,21 @@ public class DepotHeadService {
                     BigDecimal changeAmount = dh.getChangeAmount()!=null?dh.getChangeAmount():BigDecimal.ZERO;
                     BigDecimal debt = discountLastMoney.add(otherMoney).subtract((deposit.add(changeAmount)));
                     dh.setDebt(roleService.parseBillPriceByLimit(debt, billCategory, priceLimit, request));
+
+                    //此前欠款
+                    BigDecimal advanceIn = dh.getAdvanceIn()!=null?dh.getAdvanceIn():BigDecimal.ZERO;
+                    BigDecimal beginNeedGet = dh.getBeginNeedGet()!=null?dh.getBeginNeedGet():BigDecimal.ZERO;
+                    BigDecimal beginNeedPay = dh.getBeginNeedPay()!=null?dh.getBeginNeedPay():BigDecimal.ZERO;
+                    BigDecimal allNeedGet = dh.getAllNeedGet()!=null?dh.getAllNeedGet():BigDecimal.ZERO;
+                    BigDecimal allNeedPay = dh.getAllNeedPay()!=null?dh.getAllNeedPay():BigDecimal.ZERO;
+                    BigDecimal previousDebt = beginNeedGet.add(allNeedGet) // 总应收
+                            .subtract(beginNeedPay.add(allNeedPay))        // 减去总应付
+                            .subtract(advanceIn);
+                    dh.setPreviousDebt(previousDebt);
+                    //累计欠款
+                    BigDecimal allNeed = previousDebt.add(debt);
+                    dh.setAllNeed(allNeed);
+
                     //是否有付款单或收款单
                     if(financialBillNoMap!=null) {
                         Integer financialBillNoSize = financialBillNoMap.get(dh.getId());
@@ -1010,6 +1025,19 @@ public class DepotHeadService {
                 BigDecimal changeAmount = dh.getChangeAmount()!=null?dh.getChangeAmount():BigDecimal.ZERO;
                 BigDecimal debt = discountLastMoney.add(otherMoney).subtract((deposit.add(changeAmount)));
                 dh.setDebt(roleService.parseBillPriceByLimit(debt, billCategory, priceLimit, request));
+                //此前欠款
+                BigDecimal advanceIn = dh.getAdvanceIn()!=null?dh.getAdvanceIn():BigDecimal.ZERO;
+                BigDecimal beginNeedGet = dh.getBeginNeedGet()!=null?dh.getBeginNeedGet():BigDecimal.ZERO;
+                BigDecimal beginNeedPay = dh.getBeginNeedPay()!=null?dh.getBeginNeedPay():BigDecimal.ZERO;
+                BigDecimal allNeedGet = dh.getAllNeedGet()!=null?dh.getAllNeedGet():BigDecimal.ZERO;
+                BigDecimal allNeedPay = dh.getAllNeedPay()!=null?dh.getAllNeedPay():BigDecimal.ZERO;
+                BigDecimal previousDebt = beginNeedGet.add(allNeedGet) // 总应收
+                        .subtract(beginNeedPay.add(allNeedPay))        // 减去总应付
+                        .subtract(advanceIn);
+                dh.setPreviousDebt(previousDebt);
+                //累计欠款
+                BigDecimal allNeed = previousDebt.add(debt);
+                dh.setAllNeed(allNeed);
                 //是否有付款单或收款单
                 if(financialBillNoMap!=null) {
                     Integer financialBillNoSize = financialBillNoMap.get(dh.getId());

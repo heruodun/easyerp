@@ -61,6 +61,8 @@
 
     <select id="selectByConditionDepotHead" parameterType="com.jsh.erp.datasource.entities.DepotHeadExample" resultMap="ResultMapEx">
         select jdh.*, s.supplier OrganName, u.username userName, a.name AccountName
+        ,s.advance_in AdvanceIn, s.begin_need_get BeginNeedGet, s.begin_need_pay BeginNeedPay, s.all_need_pay AllNeedPay
+        , s.all_need_get AllNeedGet
         from (select dh.id
         from jsh_depot_head dh
         left join jsh_depot_item di on dh.id = di.header_id and ifnull(di.delete_flag,'0') !='1'
@@ -1062,7 +1064,8 @@
 
     <select id="getDetailByNumber" parameterType="com.jsh.erp.datasource.entities.DepotHeadExample" resultMap="ResultMapEx">
         select dh.*, concat(dh.sub_type,dh.type) as depotHeadType, a.name AccountName,
-               s.supplier OrganName, s.contacts, s.telephone, s.address
+               s.supplier OrganName, s.contacts, s.telephone, s.address, s.advance_in AdvanceIn,
+        s.begin_need_get BeginNeedGet, s.begin_need_pay BeginNeedPay, s.all_need_pay AllNeedPay, s.all_need_get AllNeedGet
         from jsh_depot_head dh
         left join jsh_supplier s on dh.organ_id=s.id and ifnull(s.delete_Flag,'0') !='1'
         left join jsh_account a on dh.account_id=a.id and ifnull(a.delete_Flag,'0') !='1'

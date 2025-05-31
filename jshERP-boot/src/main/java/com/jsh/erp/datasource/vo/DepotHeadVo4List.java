@@ -57,6 +57,82 @@ public class DepotHeadVo4List extends DepotHead{
      */
     private BigDecimal realNeedDebt;
 
+    private BigDecimal advanceIn;
+
+    private BigDecimal beginNeedGet;
+
+    private BigDecimal beginNeedPay;
+
+    private BigDecimal allNeedGet;
+
+    private BigDecimal allNeedPay;
+
+    /**
+     * 累计欠款
+     */
+    private BigDecimal allNeed;
+
+    /**
+     * 此前欠款
+     */
+    private BigDecimal previousDebt;
+
+    public BigDecimal getPreviousDebt() {
+        return previousDebt;
+    }
+
+    public void setPreviousDebt(BigDecimal previousDebt) {
+        this.previousDebt = previousDebt;
+    }
+
+    public BigDecimal getAdvanceIn() {
+        return advanceIn;
+    }
+
+    public void setAdvanceIn(BigDecimal advanceIn) {
+        this.advanceIn = advanceIn;
+    }
+
+    public BigDecimal getBeginNeedGet() {
+        return beginNeedGet;
+    }
+
+    public void setBeginNeedGet(BigDecimal beginNeedGet) {
+        this.beginNeedGet = beginNeedGet;
+    }
+
+    public BigDecimal getBeginNeedPay() {
+        return beginNeedPay;
+    }
+
+    public void setBeginNeedPay(BigDecimal beginNeedPay) {
+        this.beginNeedPay = beginNeedPay;
+    }
+
+    public BigDecimal getAllNeedGet() {
+        return allNeedGet;
+    }
+
+    public void setAllNeedGet(BigDecimal allNeedGet) {
+        this.allNeedGet = allNeedGet;
+    }
+
+    public BigDecimal getAllNeedPay() {
+        return allNeedPay;
+    }
+
+    public void setAllNeedPay(BigDecimal allNeedPay) {
+        this.allNeedPay = allNeedPay;
+    }
+
+    public BigDecimal getAllNeed() {
+        return allNeed;
+    }
+
+    public void setAllNeed(BigDecimal allNeed) {
+        this.allNeed = allNeed;
+    }
+
     public String getProjectName() {
         return projectName;
     }
