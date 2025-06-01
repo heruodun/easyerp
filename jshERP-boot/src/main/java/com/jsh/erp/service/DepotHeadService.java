@@ -178,21 +178,6 @@ public class DepotHeadService {
                     BigDecimal changeAmount = dh.getChangeAmount()!=null?dh.getChangeAmount():BigDecimal.ZERO;
                     BigDecimal debt = discountLastMoney.add(otherMoney).subtract((deposit.add(changeAmount)));
                     dh.setDebt(roleService.parseBillPriceByLimit(debt, billCategory, priceLimit, request));
-
-                    //此前欠款
-                    BigDecimal advanceIn = dh.getAdvanceIn()!=null?dh.getAdvanceIn():BigDecimal.ZERO;
-                    BigDecimal beginNeedGet = dh.getBeginNeedGet()!=null?dh.getBeginNeedGet():BigDecimal.ZERO;
-                    BigDecimal beginNeedPay = dh.getBeginNeedPay()!=null?dh.getBeginNeedPay():BigDecimal.ZERO;
-                    BigDecimal allNeedGet = dh.getAllNeedGet()!=null?dh.getAllNeedGet():BigDecimal.ZERO;
-                    BigDecimal allNeedPay = dh.getAllNeedPay()!=null?dh.getAllNeedPay():BigDecimal.ZERO;
-                    BigDecimal previousDebt = beginNeedGet.add(allNeedGet) // 总应收
-                            .subtract(beginNeedPay.add(allNeedPay))        // 减去总应付
-                            .subtract(advanceIn);
-                    dh.setPreviousDebt(previousDebt);
-                    //累计欠款
-                    BigDecimal allNeed = previousDebt.add(debt);
-                    dh.setAllNeed(allNeed);
-
                     //是否有付款单或收款单
                     if(financialBillNoMap!=null) {
                         Integer financialBillNoSize = financialBillNoMap.get(dh.getId());
@@ -229,6 +214,59 @@ public class DepotHeadService {
             JshException.readFail(logger, e);
         }
         return list;
+    }
+
+    /**
+     * 从系统开始使用到createTime，供应商或者客户的累计收款 和 累计欠款
+     * @param supplierType
+     * @param organId
+     * @param opTime
+     * @return
+     */
+    public BigDecimal getAllNeedGetOrPay(String supplierType, Long organId, String opTime){
+        Integer supplierId = organId.intValue();
+        String beginTime = "2000-01-01 00:00:00";
+        String endTime = opTime;
+        BigDecimal sum = BigDecimal.ZERO;
+        String inOutType = "";
+        String subType = "";
+        String typeBack = "";
+        String subTypeBack = "";
+        String billType = "";
+        if (("供应商").equals(supplierType)) {
+            inOutType = "入库";
+            subType = "采购";
+            typeBack = "出库";
+            subTypeBack = "采购退货";
+            billType = "付款";
+        } else if (("客户").equals(supplierType)) {
+            inOutType = "出库";
+            subType = "销售";
+            typeBack = "入库";
+            subTypeBack = "销售退货";
+            billType = "收款";
+        }
+
+        List<DepotHeadVo4StatementAccount> saList = getStatementAccount(beginTime, endTime, supplierId, null,
+                1, supplierType, inOutType, subType, typeBack, subTypeBack, billType, null, null);
+        if(saList.size()>0) {
+            BigDecimal allNeedGet = getAllNeedGet(saList);
+            sum = sum.add(allNeedGet);
+        }
+        return sum;
+    }
+
+    private static BigDecimal getAllNeedGet(List<DepotHeadVo4StatementAccount> saList) {
+        DepotHeadVo4StatementAccount item = saList.get(0);
+        //期初 = 起始期初金额+上期欠款金额-上期退货的欠款金额-上期收付款
+        BigDecimal preNeed = item.getBeginNeed().add(item.getPreDebtMoney()).subtract(item.getPreReturnDebtMoney()).subtract(item.getPreBackMoney());
+        item.setPreNeed(preNeed);
+        //实际欠款 = 本期欠款-本期退货的欠款金额
+        BigDecimal realDebtMoney = item.getDebtMoney().subtract(item.getReturnDebtMoney());
+        item.setDebtMoney(realDebtMoney);
+        //期末 = 期初+实际欠款-本期收款
+        BigDecimal allNeedGet = preNeed.add(realDebtMoney).subtract(item.getBackMoney());
+        return allNeedGet;
     }
 
     /**
@@ -1025,19 +1063,16 @@ public class DepotHeadService {
                 BigDecimal changeAmount = dh.getChangeAmount()!=null?dh.getChangeAmount():BigDecimal.ZERO;
                 BigDecimal debt = discountLastMoney.add(otherMoney).subtract((deposit.add(changeAmount)));
                 dh.setDebt(roleService.parseBillPriceByLimit(debt, billCategory, priceLimit, request));
-                //此前欠款
-                BigDecimal advanceIn = dh.getAdvanceIn()!=null?dh.getAdvanceIn():BigDecimal.ZERO;
-                BigDecimal beginNeedGet = dh.getBeginNeedGet()!=null?dh.getBeginNeedGet():BigDecimal.ZERO;
-                BigDecimal beginNeedPay = dh.getBeginNeedPay()!=null?dh.getBeginNeedPay():BigDecimal.ZERO;
-                BigDecimal allNeedGet = dh.getAllNeedGet()!=null?dh.getAllNeedGet():BigDecimal.ZERO;
-                BigDecimal allNeedPay = dh.getAllNeedPay()!=null?dh.getAllNeedPay():BigDecimal.ZERO;
-                BigDecimal previousDebt = beginNeedGet.add(allNeedGet) // 总应收
-                        .subtract(beginNeedPay.add(allNeedPay))        // 减去总应付
-                        .subtract(advanceIn);
-                dh.setPreviousDebt(previousDebt);
+
+                Long organId = dh.getOrganId();
+                String opTime = Tools.getCenternTime(dh.getCreateTime());
+
+                BigDecimal allNeed = getAllNeedGetOrPay("客户", organId, opTime);
                 //累计欠款
-                BigDecimal allNeed = previousDebt.add(debt);
                 dh.setAllNeed(allNeed);
+                //此前欠款
+                dh.setPreviousDebt(allNeed.subtract(debt));
+
                 //是否有付款单或收款单
                 if(financialBillNoMap!=null) {
                     Integer financialBillNoSize = financialBillNoMap.get(dh.getId());
