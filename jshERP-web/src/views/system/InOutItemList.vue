@@ -26,7 +26,7 @@
                   <a-input placeholder="请输入备注查询" v-model="queryParam.remark"></a-input>
                 </a-form-item>
               </a-col>
-              <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <span style="float: left; overflow: hidden" class="table-page-search-submitButtons">
                 <a-col :md="6" :sm="24">
                   <a-button type="primary" @click="searchQuery">查询</a-button>
                   <a-button style="margin-left: 8px" @click="searchReset">重置</a-button>
@@ -36,11 +36,15 @@
           </a-form>
         </div>
         <!-- 操作按钮区域 -->
-        <div class="table-operator"  style="margin-top: 5px">
-          <a-button v-if="btnEnableList.indexOf(1)>-1" @click="handleAdd" type="primary" icon="plus">新增</a-button>
-          <a-button v-if="btnEnableList.indexOf(1)>-1" @click="batchDel" icon="delete">删除</a-button>
-          <a-button v-if="btnEnableList.indexOf(1)>-1" @click="batchSetStatus(true)" icon="check-square">启用</a-button>
-          <a-button v-if="btnEnableList.indexOf(1)>-1" @click="batchSetStatus(false)" icon="close-square">禁用</a-button>
+        <div class="table-operator" style="margin-top: 5px">
+          <a-button v-if="btnEnableList.indexOf(1) > -1" @click="handleAdd" type="primary" icon="plus">新增</a-button>
+          <a-button v-if="btnEnableList.indexOf(6) > -1" @click="batchDel" icon="delete">删除</a-button>
+          <a-button v-if="btnEnableList.indexOf(1) > -1" @click="batchSetStatus(true)" icon="check-square"
+            >启用</a-button
+          >
+          <a-button v-if="btnEnableList.indexOf(1) > -1" @click="batchSetStatus(false)" icon="close-square"
+            >禁用</a-button
+          >
         </div>
         <!-- table区域-begin -->
         <div>
@@ -54,12 +58,17 @@
             :pagination="ipagination"
             :scroll="scroll"
             :loading="loading"
-            :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
-            @change="handleTableChange">
+            :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+            @change="handleTableChange"
+          >
             <span slot="action" slot-scope="text, record">
               <a @click="handleEdit(record)">编辑</a>
-              <a-divider v-if="btnEnableList.indexOf(1)>-1" type="vertical" />
-              <a-popconfirm v-if="btnEnableList.indexOf(1)>-1" title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+              <a-divider v-if="btnEnableList.indexOf(1) > -1" type="vertical" />
+              <a-popconfirm
+                v-if="btnEnableList.indexOf(6) > -1"
+                title="确定删除吗?"
+                @confirm="() => handleDelete(record.id)"
+              >
                 <a>删除</a>
               </a-popconfirm>
             </span>
@@ -79,77 +88,79 @@
 </template>
 <!-- f r o m 7 5  2 7 1  8 9 2 0 -->
 <script>
-  import InOutItemModal from './modules/InOutItemModal'
-  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-  import JDate from '@/components/jeecg/JDate'
-  export default {
-    name: "InOutItemList",
-    mixins:[JeecgListMixin],
-    components: {
-      InOutItemModal,
-      JDate
-    },
-    data () {
-      return {
-        labelCol: {
-          span: 5
-        },
-        wrapperCol: {
-          span: 18,
-          offset: 1
-        },
-        // 查询条件
-        queryParam: {name:'',type:'',remark:''},
-        // 表头
-        columns: [
-          {
-            title: '#',
-            dataIndex: '',
-            key:'rowIndex',
-            width:40,
-            align:"center",
-            customRender:function (t,r,index) {
-              return parseInt(index)+1;
-            }
+import InOutItemModal from './modules/InOutItemModal'
+import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+import JDate from '@/components/jeecg/JDate'
+export default {
+  name: 'InOutItemList',
+  mixins: [JeecgListMixin],
+  components: {
+    InOutItemModal,
+    JDate,
+  },
+  data() {
+    return {
+      labelCol: {
+        span: 5,
+      },
+      wrapperCol: {
+        span: 18,
+        offset: 1,
+      },
+      // 查询条件
+      queryParam: { name: '', type: '', remark: '' },
+      // 表头
+      columns: [
+        {
+          title: '#',
+          dataIndex: '',
+          key: 'rowIndex',
+          width: 40,
+          align: 'center',
+          customRender: function (t, r, index) {
+            return parseInt(index) + 1
           },
-          {
-            title: '操作',
-            dataIndex: 'action',
-            width: 100,
-            align:"center",
-            scopedSlots: { customRender: 'action' },
-          },
-          { title: '名称', dataIndex: 'name', width: 200},
-          { title: '类型', dataIndex: 'type', width: 100},
-          { title: '备注', dataIndex: 'remark', width: 200},
-          { title: '排序', dataIndex: 'sort', width: 60},
-          { title: '状态',dataIndex: 'enabled',width:60,align:"center",
-            scopedSlots: { customRender: 'customRenderFlag' }
-          }
-        ],
-        url: {
-          list: "/inOutItem/list",
-          delete: "/inOutItem/delete",
-          deleteBatch: "/inOutItem/deleteBatch",
-          batchSetStatusUrl: "/inOutItem/batchSetStatus"
-        }
-      }
-    },
-    computed: {
-
-    },
-    methods: {
-      handleEdit: function (record) {
-        this.$refs.modalForm.edit(record);
-        this.$refs.modalForm.title = "编辑";
-        this.$refs.modalForm.disableSubmit = false;
-        if(this.btnEnableList.indexOf(1)===-1) {
-          this.$refs.modalForm.isReadOnly = true
-        }
-      }
+        },
+        {
+          title: '操作',
+          dataIndex: 'action',
+          width: 100,
+          align: 'center',
+          scopedSlots: { customRender: 'action' },
+        },
+        { title: '名称', dataIndex: 'name', width: 200 },
+        { title: '类型', dataIndex: 'type', width: 100 },
+        { title: '备注', dataIndex: 'remark', width: 200 },
+        { title: '排序', dataIndex: 'sort', width: 60 },
+        {
+          title: '状态',
+          dataIndex: 'enabled',
+          width: 60,
+          align: 'center',
+          scopedSlots: { customRender: 'customRenderFlag' },
+        },
+      ],
+      url: {
+        list: '/inOutItem/list',
+        delete: '/inOutItem/delete',
+        deleteBatch: '/inOutItem/deleteBatch',
+        batchSetStatusUrl: '/inOutItem/batchSetStatus',
+      },
     }
-  }
+  },
+  computed: {},
+  methods: {
+    handleEdit: function (record) {
+      this.$refs.modalForm.edit(record)
+      this.$refs.modalForm.title = '编辑'
+      this.$refs.modalForm.disableSubmit = false
+      if (this.btnEnableList.indexOf(1) === -1) {
+        this.$refs.modalForm.isReadOnly = true
+      }
+    },
+  },
+}
 </script>
 <style scoped>
-  @import '~@assets/less/common.less'
+@import '~@assets/less/common.less';
 </style>

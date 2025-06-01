@@ -142,7 +142,7 @@
         <!-- 操作按钮区域 -->
         <div class="table-operator" style="margin-top: 5px">
           <a-button v-if="btnEnableList.indexOf(1) > -1" @click="myHandleAdd" type="primary" icon="plus">新增</a-button>
-          <a-button v-if="btnEnableList.indexOf(1) > -1" icon="delete" @click="batchDel">删除</a-button>
+          <a-button v-if="btnEnableList.indexOf(6) > -1" icon="delete" @click="batchDel">删除</a-button>
           <a-button
             v-if="quickBtn.saleBack.indexOf(1) > -1 && btnEnableList.indexOf(1) > -1"
             icon="share-alt"
@@ -225,7 +225,7 @@
               <a v-if="btnEnableList.indexOf(1) > -1" @click="myHandleCopyAdd(record)">复制</a>
               <a-divider v-if="btnEnableList.indexOf(1) > -1" type="vertical" />
               <a-popconfirm
-                v-if="btnEnableList.indexOf(1) > -1"
+                v-if="btnEnableList.indexOf(6) > -1"
                 title="确定删除吗?"
                 @confirm="() => myHandleDelete(record)"
               >
