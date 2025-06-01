@@ -13,10 +13,12 @@
   >
     <template slot="footer">
       <!--打印-->
-      <a-button key="back" @click="handleCancel">取消(ESC)</a-button>
+      <a-button key="back" @click="handleCancel">取消(Esc)</a-button>
       <template v-if="isShowPrintBtn">
-        <a-button v-if="billPrintFlag" @click="handlePrintPro">三联打印-新版</a-button>
-        <a-button v-if="billPrintFlag" @click="handlePrint">三联打印</a-button>
+        <a-button v-if="billPrintFlag" @click="handleDirectPrint">三联打印(Ctrl+P)</a-button>
+        <a-button v-if="billPrintFlag" @click="handlePrintPro">三联打印模板</a-button>
+
+        <!-- <a-button v-if="billPrintFlag" @click="handlePrint">三联打印</a-button> -->
         <!--此处为解决缓存问题-->
         <a-button v-if="billType === '零售出库'" v-print="'#retailOutPrint'">普通打印</a-button>
         <a-button v-if="billType === '零售退货入库'" v-print="'#retailBackPrint'">普通打印</a-button>
@@ -25,8 +27,8 @@
         <a-button v-if="billType === '采购入库'" v-print="'#purchaseInPrint'">普通打印</a-button>
         <a-button v-if="billType === '采购退货出库'" v-print="'#purchaseBackPrint'">普通打印</a-button>
         <a-button v-if="billType === '销售订单'" v-print="'#saleOrderPrint'">普通打印</a-button>
-        <a-button v-if="billType === '销售出库'" v-print="'#saleOutPrint'">普通打印</a-button>
-        <a-button v-if="billType === '销售退货入库'" v-print="'#saleBackPrint'">普通打印</a-button>
+        <!-- <a-button v-if="billType === '销售出库'" v-print="'#saleOutPrint'">普通打印</a-button> -->
+        <!-- <a-button v-if="billType === '销售退货入库'" v-print="'#saleBackPrint'">普通打印</a-button> -->
         <a-button v-if="billType === '其它入库'" v-print="'#otherInPrint'">普通打印</a-button>
         <a-button v-if="billType === '其它出库'" v-print="'#otherOutPrint'">普通打印</a-button>
         <a-button v-if="billType === '调拨出库'" v-print="'#allocationOutPrint'">普通打印</a-button>
@@ -1477,14 +1479,19 @@ import {
   findBillDetailByNumber,
   findFinancialDetailByNumber,
   getPlatformConfigByKey,
+  findBillPrintTemplate,
   getCurrentSystemConfig,
 } from '@/api/api'
+
 import { getMpListShort, getCheckFlag, exportXlsPost } from '@/utils/util'
 import BillPrintIframe from './BillPrintIframe'
 import BillPrintProIframe from './BillPrintProIframe'
 import FinancialDetail from '../../financial/dialog/FinancialDetail'
 import JUpload from '@/components/jeecg/JUpload'
 import Vue from 'vue'
+import { hiprint } from 'vue-plugin-hiprint'
+
+let hiprintTemplate
 export default {
   name: 'BillDetail',
   components: {
@@ -1500,6 +1507,8 @@ export default {
       visible: false,
       modalStyle: '',
       model: {},
+      printData: {},
+      printType: '',
       isCanBackCheck: true,
       billType: '',
       billPrintFlag: true,
@@ -2207,6 +2216,10 @@ export default {
             isReadOnly: isReadOnly,
           }
           let url = this.readOnly ? this.url.detailList : this.url.detailList
+
+          let typeStr = res.data.type === '其它' ? '' : res.data.type
+          this.printType = res.data.subType + typeStr
+
           this.requestSubTableData(item, type, url, params)
           this.initPlatform()
           this.getSystemConfig()
@@ -2221,6 +2234,21 @@ export default {
         .then((res) => {
           if (res && res.code === 200) {
             this.dataSource = res.data.rows
+            this.printData = {
+              ...this.model,
+              table: this.dataSource.map((item, index) => {
+                // 如果是最后一项，返回原对象（不加行号）
+                if (index === this.dataSource.length - 1) {
+                  return { ...item }
+                }
+                // 非最后一项添加行号
+                return {
+                  ...item,
+                  rowIndex: index + 1, // 行号从1开始
+                }
+              }),
+            }
+
             this.initSetting(record, type, this.dataSource)
             typeof success === 'function' ? success(res) : ''
           }
@@ -2294,7 +2322,7 @@ export default {
           let billPrintUrl = res.data.platformValue + '&no=' + this.model.number
           let billPrintHeight = document.documentElement.clientHeight - 260
           this.$refs.modalProDetail.show(this.model, billPrintUrl, billPrintHeight)
-          this.$refs.modalProDetail.title = this.billType + '-三联打印-新版'
+          this.$refs.modalProDetail.title = this.billType + '-三联打印模板'
         }
       })
     },
@@ -2307,6 +2335,84 @@ export default {
           this.$refs.modalDetail.show(this.model, billPrintUrl, billPrintHeight)
           this.$refs.modalDetail.title = this.billType + '-三联打印'
         }
+      })
+    },
+
+    // 修改后 → 添加捕获阶段监听
+    mounted() {
+      window.addEventListener('keydown', this.handlePrintKey, true) // 关键：第三个参数 true
+    },
+    beforeDestroy() {
+      window.removeEventListener('keydown', this.handlePrintKey, true) // 同步修改
+    },
+
+    // 快捷键
+    handlePrintKey(e) {
+      // 检测是否按下 Ctrl+P (Windows) 或 Cmd+P (Mac)
+      console.log('按键捕获:', e.key, e.keyCode, 'Ctrl:', e.ctrlKey, 'Meta:', e.metaKey)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+        console.log('handlePrintKey ctrl + p')
+        e.preventDefault()
+        //打印 CTRL+P
+        this.handleDirectPrint()
+      }
+    },
+
+    async handleDirectPrint() {
+      if (this.printData.status != 1) {
+        this.$message.error('订单未审核通过，不可以打印')
+        return
+      }
+      const res = await findBillPrintTemplate({
+        printType: this.printType,
+      })
+
+      let templateJson = {}
+      if (res?.code === 200 && res.data?.info?.template) {
+        try {
+          templateJson = JSON.parse(res.data.info.template)
+        } catch (e) {
+          console.error('Template parse error:', e)
+          this.$message.error('模板数据格式错误')
+        }
+      }
+
+      console.info('templateJson+[' + templateJson + ']')
+      // hiprint.init()
+      hiprintTemplate = new hiprint.PrintTemplate({
+        template: templateJson,
+        dataMode: 1, // 1:getJson 其他：getJsonTid 默认1
+        settingContainer: '#PrintElementOptionSetting',
+        paginationContainer: '.hiprint-printPagination',
+      })
+
+      if (window.hiwebSocket.opened) {
+        const printerList = hiprintTemplate.getPrinterList()
+        console.log(printerList)
+
+        hiprintTemplate.print2(this.printData, { printer: '', title: 'hiprint测试打印' })
+
+        return
+      } else {
+        console.error('客户端未连接')
+      }
+      this.$message.error({
+        title: '客户端未连接',
+        content: (h) => (
+          <div>
+            连接【{hiwebSocket.host}】失败！
+            <br />
+            请确保目标服务器已
+            <a href="https://gitee.com/CcSimple/electron-hiprint/releases" target="_blank">
+              下载
+            </a>
+            并
+            <a href="hiprint://" target="_blank">
+              运行
+            </a>
+            打印服务！
+          </div>
+        ),
       })
     },
     //零售出库|零售退货入库

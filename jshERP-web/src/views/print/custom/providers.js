@@ -923,9 +923,7 @@ export const saleBackProvider = function (ops) {
                 title: '数量',
                 align: 'center',
                 field: 'operNumber',
-                tableSummaryTitle: false,
-                tableSummary: 'sum',
-                tableSummaryAlign: 'left',
+
                 width: 100,
               },
               { title: '单价', align: 'center', field: 'unitPrice', width: 80 },
@@ -934,9 +932,6 @@ export const saleBackProvider = function (ops) {
                 align: 'center',
                 field: 'allPrice',
                 width: 100,
-                tableSummaryTitle: false,
-                tableSummary: 'sum',
-                tableSummaryAlign: 'left',
               },
               { title: '颜色', align: 'center', field: 'color', width: 80, checked: false },
               { title: '仓库名称', align: 'center', field: 'depotName', width: 100, checked: false },
@@ -1015,7 +1010,7 @@ export default [
 
   {
     value: 'saleBackProviderModule',
-    type: '销售退货',
+    type: '销售退货入库',
     f: saleBackProvider(),
   },
 ]

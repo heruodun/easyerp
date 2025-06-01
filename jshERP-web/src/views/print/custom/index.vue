@@ -3,7 +3,7 @@
     <a-row :gutter="[8, 0]" style="margin-bottom: 10px">
       <a-col :span="4"> </a-col>
       <a-col :span="20">
-        <a-space>
+        <div style="display: flex; align-items: center; gap: 12px">
           <!-- 纸张设置 -->
           <a-button-group>
             <template v-for="(value, type) in paperTypes">
@@ -70,7 +70,7 @@
             </a-popconfirm>
           </a-button-group>
           <json-view :template="template" />
-        </a-space>
+        </div>
       </a-col>
     </a-row>
     <a-row :gutter="[8, 0]">
@@ -220,7 +220,7 @@ export default {
 
       hiprint.init({
         providers: [provider.f],
-        i18n: false, // 禁用国际化支持
+        i18n: true,
         lang: 'cn',
       })
       $('.hiprintEpContainer').empty()
@@ -314,6 +314,10 @@ export default {
       this.$refs.preView.show(hiprintTemplate, this.printData, width)
     },
     print() {
+      if (this.printData.status != 1) {
+        this.$message.error('订单未审核通过，不可以打印')
+        return
+      }
       if (window.hiwebSocket.opened) {
         const printerList = hiprintTemplate.getPrinterList()
         console.log(printerList)
@@ -322,7 +326,7 @@ export default {
 
         return
       }
-      this.$error({
+      this.$message.error({
         title: '客户端未连接',
         content: (h) => (
           <div>
@@ -436,10 +440,17 @@ export default {
 
             this.printData = {
               ...this.model,
-              table: this.dataSource.map((item, index) => ({
-                ...item,
-                rowIndex: index + 1, // 行号从 1 开始
-              })),
+              table: this.dataSource.map((item, index) => {
+                // 如果是最后一项，返回原对象（不加行号）
+                if (index === this.dataSource.length - 1) {
+                  return { ...item }
+                }
+                // 非最后一项添加行号
+                return {
+                  ...item,
+                  rowIndex: index + 1, // 行号从1开始
+                }
+              }),
             }
           }
         })
@@ -475,4 +486,3 @@ export default {
   overflow-y: auto;
 }
 </style>
-

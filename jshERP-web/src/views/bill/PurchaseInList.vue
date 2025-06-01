@@ -393,8 +393,8 @@ export default {
         { title: '扣除订金', dataIndex: 'deposit', width: 80 },
         { title: '本次付款', dataIndex: 'changeAmount', width: 80 },
         { title: '本次欠款', dataIndex: 'debt', width: 80, scopedSlots: { customRender: 'customRenderDebt' } },
-        { title: '此前欠款', dataIndex: 'previousDebt', width: 80, scopedSlots: { customRender: 'customRenderDebt' } },
-        { title: '累计欠款', dataIndex: 'allNeed', width: 80, scopedSlots: { customRender: 'customRenderDebt' } },
+        // { title: '此前欠款', dataIndex: 'previousDebt', width: 80, scopedSlots: { customRender: 'customRenderDebt' } },
+        // { title: '累计欠款', dataIndex: 'allNeed', width: 80, scopedSlots: { customRender: 'customRenderDebt' } },
         { title: '备注', dataIndex: 'remark', width: 200 },
         {
           title: '状态',

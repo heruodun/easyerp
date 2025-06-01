@@ -5,20 +5,19 @@ import { UserLayout, TabLayout, RouteView, BlankLayout, PageView } from '@/compo
  * @type {[null,null]}
  */
 export const asyncRouterMap = [
-
   {
     path: '/',
     name: 'dashboard',
     component: TabLayout,
     meta: { title: '首页' },
     redirect: '/dashboard/analysis',
-    children: [
-
-    ]
+    children: [],
   },
   {
-    path: '*', redirect: '/404', hidden: true
-  }
+    path: '*',
+    redirect: '/404',
+    hidden: true,
+  },
 ]
 
 /**
@@ -35,14 +34,14 @@ export const constantRouterMap = [
       {
         path: 'login',
         name: 'login',
-        component: () => import(/* webpackChunkName: "user" */ '@/views/user/Login')
+        component: () => import(/* webpackChunkName: "user" */ '@/views/user/Login'),
       },
       {
         path: 'register',
         name: 'register',
-        component: () => import(/* webpackChunkName: "user" */ '@/views/user/Register')
-      }
-    ]
+        component: () => import(/* webpackChunkName: "user" */ '@/views/user/Register'),
+      },
+    ],
   },
   {
     path: '/dashboard',
@@ -53,13 +52,17 @@ export const constantRouterMap = [
         path: 'analysis',
         name: 'analysis',
         meta: { title: '首页' },
-        component: () => import(/* webpackChunkName: "dashboard" */ '@/views/dashboard/Analysis')
-      }
-    ]
+        component: () => import(/* webpackChunkName: "dashboard" */ '@/views/dashboard/Analysis'),
+      },
+    ],
   },
   {
     path: '/404',
-    component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404')
+    component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404'),
   },
 
+  {
+    path: '/print',
+    component: () => import(/* webpackChunkName: "fail" */ '@/views/print/Print'),
+  },
 ]

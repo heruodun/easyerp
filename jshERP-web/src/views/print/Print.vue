@@ -1,10 +1,10 @@
 <template>
   <div>
-    <a-space class="logos" style="float: left">
+    <div class="logos" style="float: left">
       <!-- <img src="./assets/logo.png" /> -->
       <!-- <img src="./assets/hi.png" /> -->
       <!-- <div>期待大家的参与😁</div> -->
-    </a-space>
+    </div>
     <a-row type="flex" class="menus">
       <a-button-group>
         <template v-for="demo in demoList">
@@ -45,7 +45,7 @@
     </a-row>
     <!-- 动态渲染组件，懒得去弄路由了 -->
     <keep-alive>
-      <component :is="curDemo" :bill-no="billNo" />
+      <component :is="curDemo" />
     </keep-alive>
   </div>
 </template>
@@ -211,4 +211,3 @@ export default {
   font-size: 12px;
 }
 </style>
-
