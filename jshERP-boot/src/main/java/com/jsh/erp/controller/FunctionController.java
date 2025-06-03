@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jsh.erp.base.BaseController;
 import com.jsh.erp.base.TableDataInfo;
+import com.jsh.erp.constants.HttpConstants;
 import com.jsh.erp.datasource.entities.*;
 import com.jsh.erp.service.FunctionService;
 import com.jsh.erp.service.SystemConfigService;
@@ -255,7 +256,7 @@ public class FunctionController extends BaseController {
                 //根据条件从列表里面移除"系统管理"
                 List<Function> dataList = new ArrayList<>();
                 for (Function fun : dataListFun) {
-                    String token = request.getHeader("X-Access-Token");
+                    String token = request.getHeader(HttpConstants.ACCESS_TOKEN);
                     Long tenantId = Tools.getTenantIdByToken(token);
                     if (tenantId!=0L) {
                         if(!("系统管理").equals(fun.getName())) {

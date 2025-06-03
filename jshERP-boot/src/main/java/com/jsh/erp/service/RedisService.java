@@ -1,6 +1,7 @@
 package com.jsh.erp.service;
 
 import com.jsh.erp.constants.BusinessConstants;
+import com.jsh.erp.constants.HttpConstants;
 import com.jsh.erp.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -26,7 +27,7 @@ public class RedisService {
     @Resource
     public RedisTemplate redisTemplate;
 
-    public static final String ACCESS_TOKEN = "X-Access-Token";
+
 
     @Autowired(required = false)
     public void setRedisTemplate(RedisTemplate redisTemplate) {
@@ -52,7 +53,7 @@ public class RedisService {
         if(request==null){
             return null;
         }
-        String token = request.getHeader(ACCESS_TOKEN);
+        String token = request.getHeader(HttpConstants.ACCESS_TOKEN);
         if(token!=null) {
             //开启redis，用户数据放在redis中，从redis中获取
             if(redisTemplate.opsForHash().hasKey(token,key)){
@@ -126,7 +127,7 @@ public class RedisService {
      */
     public void deleteObjectBySession(HttpServletRequest request, String key){
         if(request!=null){
-            String token = request.getHeader(ACCESS_TOKEN);
+            String token = request.getHeader(HttpConstants.ACCESS_TOKEN);
             if(StringUtil.isNotEmpty(token)){
                 //开启redis，用户数据放在redis中，从redis中删除
                 redisTemplate.opsForHash().delete(token, key);

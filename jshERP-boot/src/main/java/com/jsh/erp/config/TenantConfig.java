@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.PerformanceInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.tenant.TenantHandler;
 import com.baomidou.mybatisplus.extension.plugins.tenant.TenantSqlParser;
+import com.jsh.erp.constants.HttpConstants;
 import com.jsh.erp.utils.Tools;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LongValue;
@@ -31,7 +32,7 @@ public class TenantConfig {
         tenantSqlParser.setTenantHandler(new TenantHandler() {
             @Override
             public Expression getTenantId() {
-                String token = request.getHeader("X-Access-Token");
+                String token = request.getHeader(HttpConstants.ACCESS_TOKEN);
                 Long tenantId = Tools.getTenantIdByToken(token);
                 if (tenantId!=0L) {
                     return new LongValue(tenantId);
@@ -50,7 +51,7 @@ public class TenantConfig {
             public boolean doTableFilter(String tableName) {
                 //获取开启状态
                 Boolean res = true;
-                String token = request.getHeader("X-Access-Token");
+                String token = request.getHeader(HttpConstants.ACCESS_TOKEN);
                 Long tenantId = Tools.getTenantIdByToken(token);
                 if (tenantId!=0L) {
                     // 这里可以判断是否过滤表

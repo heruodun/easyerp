@@ -9,6 +9,7 @@ import com.aliyun.oss.OSSException;
 import com.aliyun.oss.model.CopyObjectResult;
 import com.aliyun.oss.model.PutObjectRequest;
 import com.jsh.erp.constants.BusinessConstants;
+import com.jsh.erp.constants.HttpConstants;
 import com.jsh.erp.datasource.entities.SystemConfig;
 import com.jsh.erp.datasource.entities.SystemConfigExample;
 import com.jsh.erp.datasource.entities.User;
@@ -179,7 +180,7 @@ public class SystemConfigService {
             if (bizPath.contains("..") || bizPath.contains("/")) {
                 throw new IllegalArgumentException("Invalid bizPath");
             }
-            String token = request.getHeader("X-Access-Token");
+            String token = request.getHeader(HttpConstants.ACCESS_TOKEN);
             Long tenantId = Tools.getTenantIdByToken(token);
             bizPath = bizPath + File.separator + tenantId;
             String ctxPath = filePath;
@@ -245,7 +246,7 @@ public class SystemConfigService {
         if (bizPath.contains("..") || bizPath.contains("/")) {
             throw new IllegalArgumentException("Invalid bizPath");
         }
-        String token = request.getHeader("X-Access-Token");
+        String token = request.getHeader(HttpConstants.ACCESS_TOKEN);
         Long tenantId = Tools.getTenantIdByToken(token);
         bizPath = bizPath + "/" + tenantId;
         String endpoint = platformConfigService.getPlatformConfigByKey("aliOss_endpoint").getPlatformValue();
