@@ -138,11 +138,11 @@ public class AccountHeadService {
     public String[] getCreatorArray() throws Exception {
         String creator = "";
         User user = userService.getCurrentUser();
-        String roleType = userService.getRoleTypeByUserId(user.getId()).getType(); //角色类型
+        String roleType = userService.getRoleTypeByUserId(user.getEmployeeId()).getType(); //角色类型
         if(BusinessConstants.ROLE_TYPE_PRIVATE.equals(roleType)) {
-            creator = user.getId().toString();
+            creator = user.getEmployeeId().toString();
         } else if(BusinessConstants.ROLE_TYPE_THIS_ORG.equals(roleType)) {
-            creator = orgaUserRelService.getUserIdListByUserId(user.getId());
+            creator = orgaUserRelService.getUserIdListByUserId(user.getEmployeeId());
         }
         String [] creatorArray=null;
         if(StringUtil.isNotEmpty(creator)){
@@ -157,7 +157,7 @@ public class AccountHeadService {
         int result=0;
         try{
             User userInfo=userService.getCurrentUser();
-            accountHead.setCreator(userInfo==null?null:userInfo.getId());
+            accountHead.setCreator(userInfo==null?null:userInfo.getEmployeeId());
             result = accountHeadMapper.insertSelective(accountHead);
             logService.insertLog("财务",
                     new StringBuffer(BusinessConstants.LOG_OPERATION_TYPE_ADD).append(accountHead.getBillNo()).toString(), request);
@@ -205,9 +205,9 @@ public class AccountHeadService {
             }
         }
         //删除主表
-        accountItemMapperEx.batchDeleteAccountItemByHeadIds(new Date(),userInfo==null?null:userInfo.getId(),idArray);
+        accountItemMapperEx.batchDeleteAccountItemByHeadIds(new Date(),userInfo==null?null:userInfo.getEmployeeId(),idArray);
         //删除子表
-        accountHeadMapperEx.batchDeleteAccountHeadByIds(new Date(),userInfo==null?null:userInfo.getId(),idArray);
+        accountHeadMapperEx.batchDeleteAccountHeadByIds(new Date(),userInfo==null?null:userInfo.getEmployeeId(),idArray);
         //路径列表
         List<String> pathList = new ArrayList<>();
         for(AccountHead accountHead: list){
@@ -307,7 +307,7 @@ public class AccountHeadService {
             }
         }
         User userInfo=userService.getCurrentUser();
-        accountHead.setCreator(userInfo==null?null:userInfo.getId());
+        accountHead.setCreator(userInfo==null?null:userInfo.getEmployeeId());
         if(StringUtil.isEmpty(accountHead.getStatus())) {
             accountHead.setStatus(BusinessConstants.BILLS_STATUS_UN_AUDIT);
         }

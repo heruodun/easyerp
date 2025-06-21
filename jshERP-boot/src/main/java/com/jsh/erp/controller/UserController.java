@@ -136,7 +136,7 @@ public class UserController extends BaseController {
         BaseResponseInfo res = new BaseResponseInfo();
         try {
             userService.validateCaptcha(userParam.getCode(), userParam.getUuid());
-            Map<String, Object> data = userService.login(userParam.getLoginName().trim(), userParam.getPassword().trim(), request);
+            Map<String, Object> data = userService.login(userParam.getLoginName().trim(), userParam.getLoginPwd().trim(), request);
             res.code = 200;
             res.data = data;
         } catch (BusinessRunTimeException e) {
@@ -162,7 +162,7 @@ public class UserController extends BaseController {
                 res.data = "微信未绑定";
             } else {
                 logger.info("微信登录:" + user.getLoginName());
-                Map<String, Object> data = userService.login(user.getLoginName().trim(), user.getPassword().trim(), request);
+                Map<String, Object> data = userService.login(user.getLoginName().trim(), user.getLoginPwd().trim(), request);
                 res.code = 200;
                 res.data = data;
             }
@@ -198,7 +198,7 @@ public class UserController extends BaseController {
             Map<String, Object> data = new HashMap<>();
             Long userId = Long.parseLong(redisService.getObjectFromSessionByKey(request,"userId").toString());
             User user = userService.getUser(userId);
-            user.setPassword(null);
+            user.setLoginPwd(null);
             data.put("user", user);
             res.code = 200;
             res.data = data;
@@ -253,8 +253,8 @@ public class UserController extends BaseController {
             String password = jsonObject.getString("password");
             User user = userService.getUser(userId);
             //必须和原始密码一致才可以更新密码
-            if (oldpwd.equalsIgnoreCase(user.getPassword())) {
-                user.setPassword(password);
+            if (oldpwd.equalsIgnoreCase(user.getLoginPwd())) {
+                user.setLoginPwd(password);
                 flag = userService.updateUserByObj(user); //1-成功
                 info = "修改成功";
             } else {
@@ -290,8 +290,8 @@ public class UserController extends BaseController {
             if (null != dataList) {
                 for (User user : dataList) {
                     JSONObject item = new JSONObject();
-                    item.put("id", user.getId());
-                    item.put("userName", user.getUsername());
+                    item.put("id", user.getEmployeeId());
+                    item.put("userName", user.getActualName());
                     dataArray.add(item);
                 }
             }
@@ -358,7 +358,7 @@ public class UserController extends BaseController {
     public Object registerUser(@RequestBody UserEx ue,
                                HttpServletRequest request)throws Exception{
         JSONObject result = ExceptionConstants.standardSuccess();
-        ue.setUsername(ue.getLoginName());
+        ue.setActualName(ue.getLoginName());
         userService.validateCaptcha(ue.getCode(), ue.getUuid());
         userService.checkLoginName(ue); //检查登录名
         userService.registerUser(ue,manageRoleId,request);

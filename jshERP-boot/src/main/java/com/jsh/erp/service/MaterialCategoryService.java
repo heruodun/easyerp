@@ -187,7 +187,7 @@ public class MaterialCategoryService {
         Date updateDate =new Date();
         //更新人
         User userInfo=userService.getCurrentUser();
-        Long updater=userInfo==null?null:userInfo.getId();
+        Long updater=userInfo==null?null:userInfo.getEmployeeId();
         String strArray[]=ids.split(",");
         if(strArray.length<1){
             return 0;

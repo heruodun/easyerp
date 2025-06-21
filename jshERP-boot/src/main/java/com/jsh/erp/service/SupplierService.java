@@ -150,7 +150,7 @@ public class SupplierService {
         try{
             supplier.setEnabled(true);
             User userInfo=userService.getCurrentUser();
-            supplier.setCreator(userInfo==null?null:userInfo.getId());
+            supplier.setCreator(userInfo==null?null:userInfo.getEmployeeId());
             result=supplierMapper.insertSelective(supplier);
             //新增客户时给当前用户和租户自动授权
             setUserCustomerPermission(request, supplier);
@@ -234,7 +234,7 @@ public class SupplierService {
         User userInfo=userService.getCurrentUser();
         //校验通过执行删除操作
         try{
-            result = supplierMapperEx.batchDeleteSupplierByIds(new Date(),userInfo==null?null:userInfo.getId(),idArray);
+            result = supplierMapperEx.batchDeleteSupplierByIds(new Date(),userInfo==null?null:userInfo.getEmployeeId(),idArray);
         }catch(Exception e){
             JshException.writeFail(logger, e);
         }
@@ -436,7 +436,7 @@ public class SupplierService {
                 s.setAddress(ExcelUtils.getContent(src, i, 11));
                 s.setDescription(ExcelUtils.getContent(src, i, 12));
                 s.setSort(ExcelUtils.getContent(src, i, 13));
-                s.setCreator(userInfo==null?null:userInfo.getId());
+                s.setCreator(userInfo==null?null:userInfo.getEmployeeId());
                 s.setEnabled("1".equals(enabled));
                 sList.add(s);
             }
@@ -472,7 +472,7 @@ public class SupplierService {
                 s.setAddress(ExcelUtils.getContent(src, i, 11));
                 s.setDescription(ExcelUtils.getContent(src, i, 12));
                 s.setSort(ExcelUtils.getContent(src, i, 13));
-                s.setCreator(userInfo==null?null:userInfo.getId());
+                s.setCreator(userInfo==null?null:userInfo.getEmployeeId());
                 s.setEnabled("1".equals(enabled));
                 sList.add(s);
             }
@@ -501,7 +501,7 @@ public class SupplierService {
                 s.setEmail(ExcelUtils.getContent(src, i, 4));
                 s.setDescription(ExcelUtils.getContent(src, i, 5));
                 s.setSort(ExcelUtils.getContent(src, i, 6));
-                s.setCreator(userInfo==null?null:userInfo.getId());
+                s.setCreator(userInfo==null?null:userInfo.getEmployeeId());
                 s.setEnabled("1".equals(enabled));
                 sList.add(s);
             }
@@ -629,8 +629,8 @@ public class SupplierService {
             Supplier sInfo = supplierMapperEx.getSupplierByNameAndType(supplier.getSupplier(), supplier.getType());
             String ubKey = "[" + sInfo.getId() + "]";
             //授权当前用户
-            setPermissionByParam(user.getId(), ubKey);
-            if(!user.getId().equals(user.getTenantId())) {
+            setPermissionByParam(user.getEmployeeId(), ubKey);
+            if(!user.getEmployeeId().equals(user.getTenantId())) {
                 //授权当前租户
                 setPermissionByParam(user.getTenantId(), ubKey);
             }

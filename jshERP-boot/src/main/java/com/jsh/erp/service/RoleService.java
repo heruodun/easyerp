@@ -201,7 +201,7 @@ public class RoleService {
         String [] idArray=ids.split(",");
         int result=0;
         try{
-            result=roleMapperEx.batchDeleteRoleByIds(new Date(),userInfo==null?null:userInfo.getId(),idArray);
+            result=roleMapperEx.batchDeleteRoleByIds(new Date(),userInfo==null?null:userInfo.getEmployeeId(),idArray);
         }catch(Exception e){
             JshException.writeFail(logger, e);
         }

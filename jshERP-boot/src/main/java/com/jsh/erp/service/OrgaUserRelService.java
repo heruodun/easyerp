@@ -114,7 +114,7 @@ public class OrgaUserRelService {
         }
         //创建人
         if(orgaUserRel.getCreator()==null){
-            orgaUserRel.setCreator(userInfo==null?null:userInfo.getId());
+            orgaUserRel.setCreator(userInfo==null?null:userInfo.getEmployeeId());
         }
         //更新时间
         if(orgaUserRel.getUpdateTime()==null){
@@ -122,7 +122,7 @@ public class OrgaUserRelService {
         }
         //更新人
         if(orgaUserRel.getUpdater()==null){
-            orgaUserRel.setUpdater(userInfo==null?null:userInfo.getId());
+            orgaUserRel.setUpdater(userInfo==null?null:userInfo.getEmployeeId());
         }
         orgaUserRel.setDeleteFlag(BusinessConstants.DELETE_FLAG_EXISTS);
         int result=0;
@@ -153,7 +153,7 @@ public class OrgaUserRelService {
         }
         //更新人
         if(orgaUserRel.getUpdater()==null){
-            orgaUserRel.setUpdater(userInfo==null?null:userInfo.getId());
+            orgaUserRel.setUpdater(userInfo==null?null:userInfo.getEmployeeId());
         }
         int result=0;
         try{

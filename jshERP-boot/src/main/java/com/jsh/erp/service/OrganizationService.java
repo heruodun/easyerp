@@ -120,7 +120,7 @@ public class OrganizationService {
                     ExceptionConstants.ORGANIZATION_CHILD_NOT_ALLOWED_DELETE_MSG);
         } else {
             result=organizationMapperEx.batchDeleteOrganizationByIds(
-                    new Date(),userInfo==null?null:userInfo.getId(),idArray);
+                    new Date(),userInfo==null?null:userInfo.getEmployeeId(),idArray);
         }
         return result;
     }

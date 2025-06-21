@@ -170,7 +170,7 @@ public class AccountItemService {
         String [] idArray=ids.split(",");
         int result=0;
         try{
-            result = accountItemMapperEx.batchDeleteAccountItemByIds(new Date(),userInfo==null?null:userInfo.getId(),idArray);
+            result = accountItemMapperEx.batchDeleteAccountItemByIds(new Date(),userInfo==null?null:userInfo.getEmployeeId(),idArray);
         }catch(Exception e){
             JshException.writeFail(logger, e);
         }

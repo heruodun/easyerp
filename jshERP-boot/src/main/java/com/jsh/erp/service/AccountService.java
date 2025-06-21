@@ -259,7 +259,7 @@ public class AccountService {
         User userInfo=userService.getCurrentUser();
         //校验通过执行删除操作
         try{
-            result = accountMapperEx.batchDeleteAccountByIds(new Date(),userInfo==null?null:userInfo.getId(),idArray);
+            result = accountMapperEx.batchDeleteAccountByIds(new Date(),userInfo==null?null:userInfo.getEmployeeId(),idArray);
         }catch(Exception e){
             JshException.writeFail(logger, e);
         }

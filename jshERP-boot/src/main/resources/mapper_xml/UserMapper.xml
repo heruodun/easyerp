@@ -20,6 +20,30 @@
     <result column="tenant_id" jdbcType="BIGINT" property="tenantId" />
     <result column="delete_flag" jdbcType="VARCHAR" property="deleteFlag" />
   </resultMap>
+
+  <resultMap id="BaseResultMap2" type="com.jsh.erp.datasource.entities.User">
+    <id column="employee_id" jdbcType="BIGINT" property="employeeId" />
+    <result column="actual_name" jdbcType="VARCHAR" property="actualName" />
+    <result column="login_name" jdbcType="VARCHAR" property="loginName" />
+    <result column="login_pwd" jdbcType="VARCHAR" property="loginPwd" />
+
+    <result column="department_id" jdbcType="VARCHAR" property="departmentId" />
+
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+
+    <result column="administrator_flag" jdbcType="TINYINT" property="administratorFlag" />
+
+    <result column="disabled_flag" jdbcType="TINYINT" property="disabledFlag" />
+
+
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+
+    <result column="tenant_id" jdbcType="BIGINT" property="tenantId" />
+
+    <result column="deleted_flag" jdbcType="VARCHAR" property="deletedFlag" />
+  </resultMap>
+
+
   <sql id="Example_Where_Clause">
     <where>
       <foreach collection="oredCriteria" item="criteria" separator="or">
@@ -79,16 +103,18 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, username, login_name, password, leader_flag, position, department, email, phonenum, 
+    employee_id, actual_name, login_name, password, leader_flag, position, department, email, phonenum,
     ismanager, isystem, status, description, remark, weixin_open_id, tenant_id, delete_flag
   </sql>
-  <select id="selectByExample" parameterType="com.jsh.erp.datasource.entities.UserExample" resultMap="BaseResultMap">
+
+
+  <select id="selectByExample" parameterType="com.jsh.erp.datasource.entities.UserExample" resultMap="BaseResultMap2">
     select
     <if test="distinct">
       distinct
     </if>
-    <include refid="Base_Column_List" />
-    from jsh_user
+    *
+    from t_employee
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -96,11 +122,11 @@
       order by ${orderByClause}
     </if>
   </select>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap2">
     select 
-    <include refid="Base_Column_List" />
-    from jsh_user
-    where id = #{id,jdbcType=BIGINT}
+    *
+    from t_employee
+    where employee_id = #{id,jdbcType=BIGINT}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from jsh_user
@@ -126,112 +152,93 @@
       #{description,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{weixinOpenId,jdbcType=VARCHAR}, 
       #{tenantId,jdbcType=BIGINT}, #{deleteFlag,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.jsh.erp.datasource.entities.User">
-    insert into jsh_user
+  <insert id="insertSelective" parameterType="com.jsh.erp.datasource.entities.User"  useGeneratedKeys="true"
+          keyProperty="employeeId">
+    insert into t_employee
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
+      <if test="employeeId != null">
+        employee_id,
       </if>
-      <if test="username != null">
-        username,
+      <if test="actualName != null">
+        actual_name,
       </if>
       <if test="loginName != null">
         login_name,
       </if>
-      <if test="password != null">
-        password,
+      <if test="loginPwd != null">
+        login_pwd,
       </if>
-      <if test="leaderFlag != null">
-        leader_flag,
+
+      <if test="departmentId != null">
+        department_id,
       </if>
-      <if test="position != null">
-        position,
+
+      <if test="phone != null">
+        phone,
       </if>
-      <if test="department != null">
-        department,
+
+      <if test="administratorFlag != null">
+        administrator_flag,
       </if>
-      <if test="email != null">
-        email,
+
+      <if test="disabledFlag != null">
+        disabled_flag,
       </if>
-      <if test="phonenum != null">
-        phonenum,
-      </if>
-      <if test="ismanager != null">
-        ismanager,
-      </if>
-      <if test="isystem != null">
-        isystem,
-      </if>
-      <if test="status != null">
-        status,
-      </if>
-      <if test="description != null">
-        description,
-      </if>
+
+
       <if test="remark != null">
         remark,
       </if>
-      <if test="weixinOpenId != null">
-        weixin_open_id,
+
+
+      <if test="deletedFlag != null">
+        deleted_flag,
       </if>
+
       <if test="tenantId != null">
         tenant_id,
       </if>
-      <if test="deleteFlag != null">
-        delete_flag,
-      </if>
     </trim>
+
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=BIGINT},
+      <if test="employeeId != null">
+        #{employeeId,jdbcType=BIGINT},
       </if>
-      <if test="username != null">
-        #{username,jdbcType=VARCHAR},
+
+      <if test="actualName != null">
+        #{actualName,jdbcType=VARCHAR},
       </if>
+
       <if test="loginName != null">
         #{loginName,jdbcType=VARCHAR},
       </if>
-      <if test="password != null">
-        #{password,jdbcType=VARCHAR},
+
+      <if test="loginPwd != null">
+        #{loginPwd,jdbcType=VARCHAR},
       </if>
-      <if test="leaderFlag != null">
-        #{leaderFlag,jdbcType=VARCHAR},
+
+      <if test="departmentId != null">
+        #{departmentId,jdbcType=INTEGER},
       </if>
-      <if test="position != null">
-        #{position,jdbcType=VARCHAR},
+
+      <if test="phone != null">
+        #{phone,jdbcType=VARCHAR},
       </if>
-      <if test="department != null">
-        #{department,jdbcType=VARCHAR},
+
+      <if test="administratorFlag != null">
+        #{administratorFlag,jdbcType=TINYINT},
       </if>
-      <if test="email != null">
-        #{email,jdbcType=VARCHAR},
+
+      <if test="disabledFlag != null">
+        #{disabledFlag,jdbcType=TINYINT},
       </if>
-      <if test="phonenum != null">
-        #{phonenum,jdbcType=VARCHAR},
-      </if>
-      <if test="ismanager != null">
-        #{ismanager,jdbcType=TINYINT},
-      </if>
-      <if test="isystem != null">
-        #{isystem,jdbcType=TINYINT},
-      </if>
-      <if test="status != null">
-        #{status,jdbcType=TINYINT},
-      </if>
-      <if test="description != null">
-        #{description,jdbcType=VARCHAR},
-      </if>
+
       <if test="remark != null">
         #{remark,jdbcType=VARCHAR},
       </if>
-      <if test="weixinOpenId != null">
-        #{weixinOpenId,jdbcType=VARCHAR},
-      </if>
-      <if test="tenantId != null">
-        #{tenantId,jdbcType=BIGINT},
-      </if>
-      <if test="deleteFlag != null">
-        #{deleteFlag,jdbcType=VARCHAR},
+
+      <if test="deletedFlag != null">
+        #{deletedFlag,jdbcType=TINYINT},
       </if>
     </trim>
   </insert>
@@ -324,58 +331,52 @@
     </if>
   </update>
   <update id="updateByPrimaryKeySelective" parameterType="com.jsh.erp.datasource.entities.User">
-    update jsh_user
+    update t_employee
     <set>
-      <if test="username != null">
-        username = #{username,jdbcType=VARCHAR},
+
+      <if test="actualName != null">
+        actual_name = #{actualName,jdbcType=VARCHAR},
       </if>
+
       <if test="loginName != null">
         login_name = #{loginName,jdbcType=VARCHAR},
       </if>
-      <if test="password != null">
-        password = #{password,jdbcType=VARCHAR},
+
+      <if test="loginPwd != null">
+        login_pwd =  #{loginPwd,jdbcType=VARCHAR},
       </if>
-      <if test="leaderFlag != null">
-        leader_flag = #{leaderFlag,jdbcType=VARCHAR},
+
+      <if test="departmentId != null">
+        department_id = #{departmentId,jdbcType=INTEGER},
       </if>
-      <if test="position != null">
-        position = #{position,jdbcType=VARCHAR},
+
+      <if test="phone != null">
+        phone = #{phone,jdbcType=VARCHAR},
       </if>
-      <if test="department != null">
-        department = #{department,jdbcType=VARCHAR},
+
+      <if test="administratorFlag != null">
+        administrator_flag = #{administratorFlag,jdbcType=TINYINT},
       </if>
-      <if test="email != null">
-        email = #{email,jdbcType=VARCHAR},
+
+
+      <if test="disabledFlag != null">
+        disabled_flag = #{disabledFlag,jdbcType=TINYINT},
       </if>
-      <if test="phonenum != null">
-        phonenum = #{phonenum,jdbcType=VARCHAR},
-      </if>
-      <if test="ismanager != null">
-        ismanager = #{ismanager,jdbcType=TINYINT},
-      </if>
-      <if test="isystem != null">
-        isystem = #{isystem,jdbcType=TINYINT},
-      </if>
-      <if test="status != null">
-        status = #{status,jdbcType=TINYINT},
-      </if>
-      <if test="description != null">
-        description = #{description,jdbcType=VARCHAR},
-      </if>
+
       <if test="remark != null">
-        remark = #{remark,jdbcType=VARCHAR},
+        remark =  #{remark,jdbcType=VARCHAR},
       </if>
-      <if test="weixinOpenId != null">
-        weixin_open_id = #{weixinOpenId,jdbcType=VARCHAR},
-      </if>
+
       <if test="tenantId != null">
         tenant_id = #{tenantId,jdbcType=BIGINT},
       </if>
-      <if test="deleteFlag != null">
-        delete_flag = #{deleteFlag,jdbcType=VARCHAR},
+      <if test="deletedFlag != null">
+        deleted_flag = #{deletedFlag,jdbcType=TINYINT},
       </if>
     </set>
-    where id = #{id,jdbcType=BIGINT}
+
+
+    where employee_id = #{employeeId,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.jsh.erp.datasource.entities.User">
     update jsh_user

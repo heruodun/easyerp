@@ -146,7 +146,7 @@ public class FunctionService {
         int result=0;
         try{
             if(BusinessConstants.DEFAULT_MANAGER.equals(userService.getCurrentUser().getLoginName())) {
-                result = functionMapperEx.batchDeleteFunctionByIds(new Date(), userInfo == null ? null : userInfo.getId(), idArray);
+                result = functionMapperEx.batchDeleteFunctionByIds(new Date(), userInfo == null ? null : userInfo.getEmployeeId(), idArray);
                 logService.insertLog("功能", sb.toString(),
                         ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest());
             }
@@ -291,7 +291,7 @@ public class FunctionService {
         String fc = "";
         User userInfo = userService.getCurrentUser();
         //获取当前用户所有的角色id
-        List<UserBusiness> roleList = userBusinessService.getBasicData(userInfo.getId().toString(), "UserRole");
+        List<UserBusiness> roleList = userBusinessService.getBasicData(userInfo.getEmployeeId().toString(), "UserRole");
         if(roleList!=null && roleList.size()>0){
             String value = roleList.get(0).getValue();
             if(StringUtil.isNotEmpty(value)){

@@ -104,7 +104,7 @@ public class SystemConfigService {
         try{
             result=systemConfigMapper.insertSelective(systemConfig);
             String logInfo = StringUtil.isNotEmpty(systemConfig.getCompanyName())?systemConfig.getCompanyName():"配置信息";
-            logService.insertLogWithUserId(userService.getCurrentUser().getId(), userService.getCurrentUser().getTenantId(), "系统配置",
+            logService.insertLogWithUserId(userService.getCurrentUser().getEmployeeId(), userService.getCurrentUser().getTenantId(), "系统配置",
                     new StringBuffer(BusinessConstants.LOG_OPERATION_TYPE_ADD).append(logInfo).toString(), request);
         }catch(Exception e){
             JshException.writeFail(logger, e);
@@ -119,7 +119,7 @@ public class SystemConfigService {
         try{
             result = systemConfigMapper.updateByPrimaryKeySelective(systemConfig);
             String logInfo = StringUtil.isNotEmpty(systemConfig.getCompanyName())?systemConfig.getCompanyName():"配置信息";
-            logService.insertLogWithUserId(userService.getCurrentUser().getId(), userService.getCurrentUser().getTenantId(), "系统配置",
+            logService.insertLogWithUserId(userService.getCurrentUser().getEmployeeId(), userService.getCurrentUser().getTenantId(), "系统配置",
                     new StringBuffer(BusinessConstants.LOG_OPERATION_TYPE_EDIT).append(logInfo).toString(), request);
         }catch(Exception e){
             JshException.writeFail(logger, e);
@@ -146,7 +146,7 @@ public class SystemConfigService {
         String [] idArray=ids.split(",");
         int result=0;
         try{
-            result = systemConfigMapperEx.batchDeleteSystemConfigByIds(new Date(), userInfo == null ? null : userInfo.getId(), idArray);
+            result = systemConfigMapperEx.batchDeleteSystemConfigByIds(new Date(), userInfo == null ? null : userInfo.getEmployeeId(), idArray);
         }catch(Exception e){
             JshException.writeFail(logger, e);
         }

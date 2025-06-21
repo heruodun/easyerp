@@ -289,7 +289,7 @@ public class MaterialService {
         //校验通过执行删除操作
         try{
             //逻辑删除商品
-            materialMapperEx.batchDeleteMaterialByIds(new Date(),userInfo==null?null:userInfo.getId(),idArray);
+            materialMapperEx.batchDeleteMaterialByIds(new Date(),userInfo==null?null:userInfo.getEmployeeId(),idArray);
             //逻辑删除商品价格扩展
             materialExtendMapperEx.batchDeleteMaterialExtendByMIds(idArray);
             //逻辑删除文件

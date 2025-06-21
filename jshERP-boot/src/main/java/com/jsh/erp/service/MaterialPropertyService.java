@@ -151,7 +151,7 @@ public class MaterialPropertyService {
         String [] idArray=ids.split(",");
         int  result=0;
         try{
-            result = materialPropertyMapperEx.batchDeleteMaterialPropertyByIds(new Date(), userInfo == null ? null : userInfo.getId(), idArray);
+            result = materialPropertyMapperEx.batchDeleteMaterialPropertyByIds(new Date(), userInfo == null ? null : userInfo.getEmployeeId(), idArray);
             logService.insertLog("商品属性",
                     new StringBuffer(BusinessConstants.LOG_OPERATION_TYPE_DELETE).append(ids).toString(),
                     ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest());

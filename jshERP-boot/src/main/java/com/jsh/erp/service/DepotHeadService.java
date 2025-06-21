@@ -323,7 +323,7 @@ public class DepotHeadService {
     public String[] getOrganArray(String subType, String purchaseStatus) throws Exception {
         String [] organArray = null;
         String type = "UserCustomer";
-        Long userId = userService.getCurrentUser().getId();
+        Long userId = userService.getCurrentUser().getEmployeeId();
         //获取权限信息
         String ubValue = userBusinessService.getUBValueByTypeAndKeyId(type, userId.toString());
         List<Supplier> supplierList = supplierService.findBySelectCus();
@@ -357,11 +357,11 @@ public class DepotHeadService {
     public String getCreatorByCurrentUser() throws Exception {
         String creator = "";
         User user = userService.getCurrentUser();
-        String roleType = userService.getRoleTypeByUserId(user.getId()).getType(); //角色类型
+        String roleType = userService.getRoleTypeByUserId(user.getEmployeeId()).getType(); //角色类型
         if(BusinessConstants.ROLE_TYPE_PRIVATE.equals(roleType)) {
-            creator = user.getId().toString();
+            creator = user.getEmployeeId().toString();
         } else if(BusinessConstants.ROLE_TYPE_THIS_ORG.equals(roleType)) {
-            creator = orgaUserRelService.getUserIdListByUserId(user.getId());
+            creator = orgaUserRelService.getUserIdListByUserId(user.getEmployeeId());
         }
         return creator;
     }
@@ -611,7 +611,7 @@ public class DepotHeadService {
         String [] idArray=ids.split(",");
         int result=0;
         try{
-            result = depotHeadMapperEx.batchDeleteDepotHeadByIds(new Date(),userInfo==null?null:userInfo.getId(),idArray);
+            result = depotHeadMapperEx.batchDeleteDepotHeadByIds(new Date(),userInfo==null?null:userInfo.getEmployeeId(),idArray);
         }catch(Exception e){
             JshException.writeFail(logger, e);
         }
@@ -1093,7 +1093,7 @@ public class DepotHeadService {
                 if(materialsListMap!=null) {
                     dh.setMaterialsList(materialsListMap.get(dh.getId()));
                 }
-                dh.setCreatorName(userService.getUser(dh.getCreator()).getUsername());
+                dh.setCreatorName(userService.getUser(dh.getCreator()).getActualName());
                 resList.add(dh);
             }
         }catch(Exception e){
@@ -1190,7 +1190,7 @@ public class DepotHeadService {
         }
         //判断用户是否已经登录过，登录过不再处理
         User userInfo=userService.getCurrentUser();
-        depotHead.setCreator(userInfo==null?null:userInfo.getId());
+        depotHead.setCreator(userInfo==null?null:userInfo.getEmployeeId());
         depotHead.setCreateTime(new Timestamp(System.currentTimeMillis()));
         if(StringUtil.isEmpty(depotHead.getStatus())) {
             depotHead.setStatus(BusinessConstants.BILLS_STATUS_UN_AUDIT);
@@ -1823,7 +1823,7 @@ public class DepotHeadService {
             depotHead.setChangeAmount(BigDecimal.ZERO);
             depotHead.setTotalPrice(BigDecimal.ZERO);
             depotHead.setDiscountLastMoney(BigDecimal.ZERO);
-            depotHead.setCreator(userInfo==null?null:userInfo.getId());
+            depotHead.setCreator(userInfo==null?null:userInfo.getEmployeeId());
             depotHead.setOrganId(null);
             depotHead.setAccountId(null);
             depotHead.setAccountIdList(null);

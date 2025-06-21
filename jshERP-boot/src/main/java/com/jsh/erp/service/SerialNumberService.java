@@ -150,7 +150,7 @@ public class SerialNumberService {
                         String.format(ExceptionConstants.SERIAL_NUMBERE_NOT_EXISTS_MSG, sn));
             }
         }
-        serialNumberMapperEx.sellSerialNumber(materialId, outBillNo, snArray, new Date(), user == null ? null : user.getId());
+        serialNumberMapperEx.sellSerialNumber(materialId, outBillNo, snArray, new Date(), user == null ? null : user.getEmployeeId());
     }
 
     /**
@@ -164,7 +164,7 @@ public class SerialNumberService {
     public int cancelSerialNumber(Long materialId, String outBillNo,int count,User user) throws Exception{
         int result=0;
         try{
-            result = serialNumberMapperEx.cancelSerialNumber(materialId,outBillNo,count,new Date(),user==null?null:user.getId());
+            result = serialNumberMapperEx.cancelSerialNumber(materialId,outBillNo,count,new Date(),user==null?null:user.getEmployeeId());
         }catch(Exception e){
             JshException.writeFail(logger, e);
         }
@@ -184,7 +184,7 @@ public class SerialNumberService {
                 List<SerialNumberEx> list = null;
                 //当前用户
                 User userInfo = userService.getCurrentUser();
-                Long userId = userInfo == null ? null : userInfo.getId();
+                Long userId = userInfo == null ? null : userInfo.getEmployeeId();
                 Date date = null;
                 Long million = null;
                 synchronized (this) {
@@ -265,8 +265,8 @@ public class SerialNumberService {
                     serialNumber.setCreateTime(date);
                     serialNumber.setUpdateTime(date);
                     User userInfo = userService.getCurrentUser();
-                    serialNumber.setCreator(userInfo == null ? null : userInfo.getId());
-                    serialNumber.setUpdater(userInfo == null ? null : userInfo.getId());
+                    serialNumber.setCreator(userInfo == null ? null : userInfo.getEmployeeId());
+                    serialNumber.setUpdater(userInfo == null ? null : userInfo.getEmployeeId());
                     serialNumber.setInBillNo(inBillNo);
                     serialNumberMapper.insertSelective(serialNumber);
                 } else {

@@ -192,7 +192,7 @@ public class DepotService {
             //删除仓库关联的商品的当前库存
             materialCurrentStockMapperEx.batchDeleteByDepots(idArray);
             //删除仓库
-            result = depotMapperEx.batchDeleteDepotByIds(new Date(),userInfo==null?null:userInfo.getId(),idArray);
+            result = depotMapperEx.batchDeleteDepotByIds(new Date(),userInfo==null?null:userInfo.getEmployeeId(),idArray);
             //记录日志
             logService.insertLog("仓库", sb.toString(),
                     ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest());
@@ -315,7 +315,7 @@ public class DepotService {
     public JSONArray findDepotByCurrentUser() throws Exception {
         JSONArray arr = new JSONArray();
         String type = "UserDepot";
-        Long userId = userService.getCurrentUser().getId();
+        Long userId = userService.getCurrentUser().getEmployeeId();
         List<Depot> dataList = findUserDepot();
         //开始拼接json数据
         if (null != dataList) {

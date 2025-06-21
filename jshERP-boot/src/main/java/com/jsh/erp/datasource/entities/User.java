@@ -1,54 +1,87 @@
 package com.jsh.erp.datasource.entities;
 
 public class User {
-    private Long id;
 
-    private String username;
+    /**
+     * 主键ID
+     */
+    private Long employeeId;
 
+    /**
+     * 展示用户名
+     */
+    private String actualName;
+
+    /**
+     * 登录用户名
+     */
     private String loginName;
 
-    private String password;
+    /**
+     * 登录密码
+     */
+    private String loginPwd;
 
     private String leaderFlag;
 
     private String position;
 
-    private String department;
+    /**
+     * 部门ID
+     */
+    private Long departmentId;
 
     private String email;
 
-    private String phonenum;
+    /**
+     * 手机号码
+     */
+    private String phone;
 
-    private Byte ismanager;
+    /**
+     * 是否是管理员
+     */
+    private Boolean administratorFlag;
 
     private Byte isystem;
 
-    private Byte status;
+    /**
+     * 禁用状态
+     */
+    private Boolean disabledFlag;
 
     private String description;
 
+    /**
+     * 备注
+     */
     private String remark;
 
     private String weixinOpenId;
-
+    /**
+     * 租户ID
+     */
     private Long tenantId;
 
-    private String deleteFlag;
+    /**
+     * 删除状态
+     */
+    private Boolean deletedFlag;
 
-    public Long getId() {
-        return id;
+    public Long getEmployeeId() {
+        return employeeId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setEmployeeId(Long employeeId) {
+        this.employeeId = employeeId;
     }
 
-    public String getUsername() {
-        return username;
+    public String getActualName() {
+        return actualName;
     }
 
-    public void setUsername(String username) {
-        this.username = username == null ? null : username.trim();
+    public void setActualName(String actualName) {
+        this.actualName = actualName == null ? null : actualName.trim();
     }
 
     public String getLoginName() {
@@ -59,12 +92,12 @@ public class User {
         this.loginName = loginName == null ? null : loginName.trim();
     }
 
-    public String getPassword() {
-        return password;
+    public String getLoginPwd() {
+        return loginPwd;
     }
 
-    public void setPassword(String password) {
-        this.password = password == null ? null : password.trim();
+    public void setLoginPwd(String loginPwd) {
+        this.loginPwd = loginPwd == null ? null : loginPwd.trim();
     }
 
     public String getLeaderFlag() {
@@ -83,12 +116,12 @@ public class User {
         this.position = position == null ? null : position.trim();
     }
 
-    public String getDepartment() {
-        return department;
+    public Long getDepartmentId() {
+        return departmentId;
     }
 
-    public void setDepartment(String department) {
-        this.department = department == null ? null : department.trim();
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
     }
 
     public String getEmail() {
@@ -99,20 +132,20 @@ public class User {
         this.email = email == null ? null : email.trim();
     }
 
-    public String getPhonenum() {
-        return phonenum;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setPhonenum(String phonenum) {
-        this.phonenum = phonenum == null ? null : phonenum.trim();
+    public void setPhone(String phone) {
+        this.phone = phone == null ? null : phone.trim();
     }
 
-    public Byte getIsmanager() {
-        return ismanager;
+    public Boolean getAdministratorFlag() {
+        return administratorFlag;
     }
 
-    public void setIsmanager(Byte ismanager) {
-        this.ismanager = ismanager;
+    public void setAdministratorFlag(Boolean administratorFlag) {
+        this.administratorFlag = administratorFlag;
     }
 
     public Byte getIsystem() {
@@ -123,12 +156,12 @@ public class User {
         this.isystem = isystem;
     }
 
-    public Byte getStatus() {
-        return status;
+    public Boolean getDisabledFlag() {
+        return disabledFlag;
     }
 
-    public void setStatus(Byte status) {
-        this.status = status;
+    public void setDisabledFlag(Boolean disabledFlag) {
+        this.disabledFlag = disabledFlag;
     }
 
     public String getDescription() {
@@ -163,11 +196,13 @@ public class User {
         this.tenantId = tenantId;
     }
 
-    public String getDeleteFlag() {
-        return deleteFlag;
+    public Boolean getDeletedFlag() {
+        return deletedFlag;
     }
 
-    public void setDeleteFlag(String deleteFlag) {
-        this.deleteFlag = deleteFlag == null ? null : deleteFlag.trim();
+    public void setDeletedFlag(Boolean deletedFlag) {
+        this.deletedFlag = deletedFlag ;
     }
+
+
 }

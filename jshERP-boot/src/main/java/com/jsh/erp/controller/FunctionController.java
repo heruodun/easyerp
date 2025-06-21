@@ -197,7 +197,7 @@ public class FunctionController extends BaseController {
         JSONArray dataArray = new JSONArray();
         for (Function function : dataList) {
             //如果不是超管也不是租户就需要校验，防止分配下级用户的功能权限，大于租户的权限
-            if("admin".equals(userInfo.getLoginName()) || userInfo.getId().equals(userInfo.getTenantId()) || funIdMap.get(function.getId())!=null) {
+            if("admin".equals(userInfo.getLoginName()) || userInfo.getEmployeeId().equals(userInfo.getTenantId()) || funIdMap.get(function.getId())!=null) {
                 //如果关闭多级审核，遇到任务审核菜单直接跳过
                 if("0".equals(approvalFlag) && "/workflow".equals(function.getUrl())) {
                     continue;

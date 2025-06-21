@@ -1,9 +1,11 @@
 package com.jsh.erp.service;
 
 import com.jsh.erp.datasource.entities.*;
+import com.jsh.erp.datasource.mappers.DepartmentMapper;
 import com.jsh.erp.datasource.mappers.TenantMapper;
 import com.jsh.erp.exception.BusinessParamCheckingException;
 import com.jsh.erp.utils.*;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.util.StringUtils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -31,6 +33,12 @@ import java.util.*;
 public class UserService {
     private Logger logger = LoggerFactory.getLogger(UserService.class);
 
+    private static final String PASSWORD_SALT_FORMAT = "smart_%s_admin_$^&*";
+
+    public static String getEncryptPwd(String password) {
+        return DigestUtils.md5Hex(String.format(PASSWORD_SALT_FORMAT, password));
+    }
+
     @Resource
     private UserMapper userMapper;
     @Resource
@@ -55,6 +63,8 @@ public class UserService {
     private PlatformConfigService platformConfigService;
     @Resource
     private RedisService redisService;
+    @Resource
+    private DepartmentMapper departmentMapper;
 
     @Value("${tenant.userNumLimit}")
     private Integer userNumLimit;
@@ -72,6 +82,12 @@ public class UserService {
         return result;
     }
 
+    /**
+     * NO NEED
+     * @param ids
+     * @return
+     * @throws Exception
+     */
     public List<User> getUserListByIds(String ids)throws Exception {
         List<Long> idList = StringUtil.strToLongList(ids);
         List<User> list = new ArrayList<>();
@@ -112,7 +128,7 @@ public class UserService {
                 list = userMapperEx.selectByConditionUser(userName, loginName);
                 for (UserEx ue : list) {
                     String userType = "";
-                    if (ue.getId().equals(ue.getTenantId())) {
+                    if (ue.getEmployeeId().equals(ue.getTenantId())) {
                         userType = "租户";
                     } else if (ue.getTenantId() == null) {
                         userType = "超管";
@@ -136,6 +152,11 @@ public class UserService {
         return list;
     }
 
+    /**
+     * NO NEED
+     * @return
+     * @throws Exception
+     */
     public Long countUser(String userName, String loginName)throws Exception {
         Long result=null;
         try{
@@ -146,6 +167,12 @@ public class UserService {
         return result;
     }
 
+    /**
+     * NO NEED
+     * @param request
+     * @return
+     * @throws Exception
+     */
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
     public int insertUser(JSONObject obj, HttpServletRequest request)throws Exception {
         User user = JSONObject.parseObject(obj.toJSONString(), User.class);
@@ -153,7 +180,7 @@ public class UserService {
         //因密码用MD5加密，需要对密码进行转化
         try {
             password = Tools.md5Encryp(password);
-            user.setPassword(password);
+            user.setLoginPwd(password);
         } catch (NoSuchAlgorithmException e) {
             logger.error(">>>>>>>>>>>>>>转化MD5字符串错误 ：" + e.getMessage());
         }
@@ -182,10 +209,16 @@ public class UserService {
         return result;
     }
 
+    /**
+     * NO NEED
+     * @param user
+     * @return
+     * @throws Exception
+     */
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
     public int updateUserByObj(User user) throws Exception{
         logService.insertLog("用户",
-                new StringBuffer(BusinessConstants.LOG_OPERATION_TYPE_EDIT).append(user.getId()).toString(),
+                new StringBuffer(BusinessConstants.LOG_OPERATION_TYPE_EDIT).append(user.getEmployeeId()).toString(),
                 ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest());
         int result=0;
         try{
@@ -196,6 +229,13 @@ public class UserService {
         return result;
     }
 
+    /**
+     * NO NEED
+     * @param md5Pwd
+     * @param id
+     * @return
+     * @throws Exception
+     */
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
     public int resetPwd(String md5Pwd, Long id) throws Exception{
         int result=0;
@@ -208,8 +248,8 @@ public class UserService {
             logger.info("禁止重置超管密码");
         } else {
             User user = new User();
-            user.setId(id);
-            user.setPassword(md5Pwd);
+            user.setEmployeeId(id);
+            user.setLoginPwd(md5Pwd);
             try{
                 result=userMapper.updateByPrimaryKeySelective(user);
             }catch(Exception e){
@@ -219,16 +259,36 @@ public class UserService {
         return result;
     }
 
+    /**
+     * NO NEED
+     * @param id
+     * @param request
+     * @return
+     * @throws Exception
+     */
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
     public int deleteUser(Long id, HttpServletRequest request)throws Exception {
         return batDeleteUser(id.toString());
     }
 
+    /**
+     * NO NEED
+     * @param ids
+     * @param request
+     * @return
+     * @throws Exception
+     */
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
     public int batchDeleteUser(String ids, HttpServletRequest request)throws Exception {
         return batDeleteUser(ids);
     }
 
+    /**
+     * NO NEED
+     * @param ids
+     * @return
+     * @throws Exception
+     */
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
     public int batDeleteUser(String ids) throws Exception{
         int result=0;
@@ -236,7 +296,7 @@ public class UserService {
         sb.append(BusinessConstants.LOG_OPERATION_TYPE_DELETE);
         List<User> list = getUserListByIds(ids);
         for(User user: list){
-            if(user.getId().equals(user.getTenantId())) {
+            if(user.getEmployeeId().equals(user.getTenantId())) {
                 logger.error("异常码[{}],异常提示[{}],参数,ids:[{}]",
                         ExceptionConstants.USER_LIMIT_TENANT_DELETE_CODE,ExceptionConstants.USER_LIMIT_TENANT_DELETE_MSG,ids);
                 throw new BusinessRunTimeException(ExceptionConstants.USER_LIMIT_TENANT_DELETE_CODE,
@@ -342,7 +402,7 @@ public class UserService {
                 if(user.getTenantId()!=null) {
                     token = token + "_" + user.getTenantId();
                 }
-                redisService.storageObjectBySession(token,"userId",user.getId());
+                redisService.storageObjectBySession(token,"userId",user.getEmployeeId());
                 break;
             default:
                 break;
@@ -351,12 +411,12 @@ public class UserService {
         if(user!=null){
             //校验下密码是不是过于简单
             boolean pwdSimple = false;
-            if(user.getPassword().equals(Tools.md5Encryp(BusinessConstants.USER_DEFAULT_PASSWORD))) {
+            if(user.getLoginPwd().equals(Tools.md5Encryp(BusinessConstants.USER_DEFAULT_PASSWORD))) {
                 pwdSimple = true;
             }
-            user.setPassword(null);
+            user.setLoginPwd(null);
             redisService.storageObjectBySession(token,"clientIp", Tools.getLocalIp(request));
-            logService.insertLogWithUserId(user.getId(), user.getTenantId(), "用户",
+            logService.insertLogWithUserId(user.getEmployeeId(), user.getTenantId(), "用户",
                     new StringBuffer(BusinessConstants.LOG_OPERATION_TYPE_LOGIN).append(user.getLoginName()).toString(),
                     ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest());
             data.put("token", token);
@@ -376,7 +436,7 @@ public class UserService {
             if (null != list && list.size() == 0) {
                 return ExceptionCodeConstants.UserExceptionCode.USER_NOT_EXIST;
             } else if(list.size() ==1) {
-                if(list.get(0).getStatus()!=0) {
+                if(!list.get(0).getDisabledFlag()) {
                     return ExceptionCodeConstants.UserExceptionCode.BLACK_USER;
                 }
                 Long tenantId = list.get(0).getTenantId();
@@ -462,11 +522,11 @@ public class UserService {
     public Long getIdByLoginName(String loginName) {
         Long userId = 0L;
         UserExample example = new UserExample();
-        example.createCriteria().andLoginNameEqualTo(loginName).andStatusEqualTo(BusinessConstants.USER_STATUS_NORMAL)
+        example.createCriteria().andLoginNameEqualTo(loginName)
                 .andDeleteFlagNotEqualTo(BusinessConstants.DELETE_FLAG_DELETED);
         List<User> list = userMapper.selectByExample(example);
         if(list!=null) {
-            userId = list.get(0).getId();
+            userId = list.get(0).getEmployeeId();
         }
         return userId;
     }
@@ -505,7 +565,7 @@ public class UserService {
             }
             if(ue.getOrgaId()!=null && "1".equals(ue.getLeaderFlag())){
                 //检查当前机构是否存在经理
-                List<User> checkList = userMapperEx.getListByOrgaId(ue.getId(), ue.getOrgaId());
+                List<User> checkList = userMapperEx.getListByOrgaId(ue.getEmployeeId(), ue.getOrgaId());
                 if(checkList.size()>0) {
                     throw new BusinessRunTimeException(ExceptionConstants.USER_LEADER_IS_EXIST_CODE,
                             ExceptionConstants.USER_LEADER_IS_EXIST_MSG);
@@ -536,12 +596,12 @@ public class UserService {
          * 3是否管理者默认为员工
          * 4默认用户状态为正常
          * */
-        ue.setPassword(Tools.md5Encryp(BusinessConstants.USER_DEFAULT_PASSWORD));
+        ue.setLoginPwd(Tools.md5Encryp(BusinessConstants.USER_DEFAULT_PASSWORD));
         ue.setIsystem(BusinessConstants.USER_NOT_SYSTEM);
-        if(ue.getIsmanager()==null){
-            ue.setIsmanager(BusinessConstants.USER_NOT_MANAGER);
+        if(ue.getAdministratorFlag()==null){
+            ue.setAdministratorFlag(false);
         }
-        ue.setStatus(BusinessConstants.USER_STATUS_NORMAL);
+        ue.setDisabledFlag(false);
         int result=0;
         try{
             result= userMapper.insertSelective(ue);
@@ -563,36 +623,49 @@ public class UserService {
             throw new BusinessRunTimeException(ExceptionConstants.USER_NAME_LIMIT_USE_CODE,
                     ExceptionConstants.USER_NAME_LIMIT_USE_MSG);
         } else {
-            ue.setPassword(ue.getPassword());
+            ue.setLoginPwd(getEncryptPwd("888"));
             ue.setIsystem(BusinessConstants.USER_NOT_SYSTEM);
-            if (ue.getIsmanager() == null) {
-                ue.setIsmanager(BusinessConstants.USER_NOT_MANAGER);
+            if (ue.getAdministratorFlag() == null) {
+                ue.setAdministratorFlag(false);
             }
-            ue.setStatus(BusinessConstants.USER_STATUS_NORMAL);
+
+            ue.setDepartmentId(-1L);
+            ue.setDisabledFlag(false);
+            ue.setDeletedFlag(false);
             try{
                 userMapper.insertSelective(ue);
-                Long userId = getIdByLoginName(ue.getLoginName());
-                ue.setId(userId);
             }catch(Exception e){
                 JshException.writeFail(logger, e);
             }
+
+            //新建一个default department
+            Department defaultDepartment = new Department();
+            defaultDepartment.setName("租户"+ue.getEmployeeId()+"默认部门");
+            defaultDepartment.setManagerId(ue.getEmployeeId());
+            defaultDepartment.setParentId(0L);
+            defaultDepartment.setSort(1);
+            defaultDepartment.setTenantId(ue.getEmployeeId());
+            departmentMapper.insertSelective(defaultDepartment);
             //更新租户id
             User user = new User();
-            user.setId(ue.getId());
-            user.setTenantId(ue.getId());
-            userService.updateUserTenant(user);
-            //新增用户与角色的关系
-            JSONObject ubObj = new JSONObject();
-            ubObj.put("type", "UserRole");
-            ubObj.put("keyid", ue.getId());
-            JSONArray ubArr = new JSONArray();
-            ubArr.add(manageRoleId);
-            ubObj.put("value", ubArr.toString());
-            ubObj.put("tenantId", ue.getId());
-            userBusinessService.insertUserBusiness(ubObj, null);
+            user.setEmployeeId(ue.getEmployeeId());
+            user.setDepartmentId(defaultDepartment.getDepartmentId());
+            user.setTenantId(ue.getEmployeeId());
+            userService.updateUserTenantAndDep(user);
+            //新增用户与角色的关系 需要改成admin表
+//            JSONObject ubObj = new JSONObject();
+//            ubObj.put("type", "UserRole");
+//            ubObj.put("keyid", ue.getEmployeeId());
+//            JSONArray ubArr = new JSONArray();
+//            ubArr.add(manageRoleId);
+//            ubObj.put("value", ubArr.toString());
+//            ubObj.put("tenantId", ue.getEmployeeId());
+//            userBusinessService.insertUserBusiness(ubObj, null);
+
+
             //创建租户信息
             JSONObject tenantObj = new JSONObject();
-            tenantObj.put("tenantId", ue.getId());
+            tenantObj.put("tenantId", ue.getEmployeeId());
             tenantObj.put("loginName",ue.getLoginName());
             tenantObj.put("userNumLimit", ue.getUserNumLimit());
             tenantObj.put("expireTime", ue.getExpireTime());
@@ -611,9 +684,9 @@ public class UserService {
     }
 
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
-    public void updateUserTenant(User user) throws Exception{
+    public void updateUserTenantAndDep(User user) throws Exception{
         UserExample example = new UserExample();
-        example.createCriteria().andIdEqualTo(user.getId());
+        example.createCriteria().andIdEqualTo(user.getEmployeeId());
         try{
             userMapper.updateByPrimaryKeySelective(user);
         }catch(Exception e){
@@ -628,7 +701,7 @@ public class UserService {
                     ExceptionConstants.USER_NAME_LIMIT_USE_MSG);
         } else {
             logService.insertLog("用户",
-                    new StringBuffer(BusinessConstants.LOG_OPERATION_TYPE_EDIT).append(ue.getId()).toString(),
+                    new StringBuffer(BusinessConstants.LOG_OPERATION_TYPE_EDIT).append(ue.getEmployeeId()).toString(),
                     ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest());
             //检查用户名和登录名
             checkLoginName(ue);
@@ -643,9 +716,9 @@ public class UserService {
             if(ue.getRoleId()!=null){
                 JSONObject ubObj = new JSONObject();
                 ubObj.put("type", "UserRole");
-                ubObj.put("keyid", ue.getId());
+                ubObj.put("keyid", ue.getEmployeeId());
                 ubObj.put("value", "[" + ue.getRoleId() + "]");
-                Long ubId = userBusinessService.checkIsValueExist("UserRole", ue.getId().toString());
+                Long ubId = userBusinessService.checkIsValueExist("UserRole", ue.getEmployeeId().toString());
                 if(ubId!=null) {
                     ubObj.put("id", ubId);
                     userBusinessService.updateUserBusiness(ubObj, request);
@@ -659,7 +732,7 @@ public class UserService {
             }
             if(ue.getOrgaId()!=null && "1".equals(ue.getLeaderFlag())){
                 //检查当前机构是否存在经理
-                List<User> checkList = userMapperEx.getListByOrgaId(ue.getId(), ue.getOrgaId());
+                List<User> checkList = userMapperEx.getListByOrgaId(ue.getEmployeeId(), ue.getOrgaId());
                 if(checkList.size()>0) {
                     throw new BusinessRunTimeException(ExceptionConstants.USER_LEADER_IS_EXIST_CODE,
                             ExceptionConstants.USER_LEADER_IS_EXIST_MSG);
@@ -672,7 +745,7 @@ public class UserService {
             //机构id
             oul.setOrgaId(ue.getOrgaId());
             //用户id
-            oul.setUserId(ue.getId());
+            oul.setUserId(ue.getEmployeeId());
             //用户在机构中的排序
             oul.setUserBlngOrgaDsplSeq(ue.getUserBlngOrgaDsplSeq());
             if (oul.getId() != null) {
@@ -714,7 +787,7 @@ public class UserService {
         if(userEx==null){
             return;
         }
-        Long userId=userEx.getId();
+        Long userId=userEx.getEmployeeId();
         //检查登录名
         if(!StringUtils.isEmpty(userEx.getLoginName())){
             String loginName=userEx.getLoginName();
@@ -729,7 +802,7 @@ public class UserService {
                 }
                 //一条数据，新增时抛出异常，修改时和当前的id不同时抛出异常
                 if(list.size()==1){
-                    if(userId==null||(userId!=null&&!userId.equals(list.get(0).getId()))){
+                    if(userId==null||(userId!=null&&!userId.equals(list.get(0).getEmployeeId()))){
                         logger.error("异常码[{}],异常提示[{}],参数,loginName:[{}]",
                                 ExceptionConstants.USER_LOGIN_NAME_ALREADY_EXISTS_CODE,ExceptionConstants.USER_LOGIN_NAME_ALREADY_EXISTS_MSG,loginName);
                         throw new BusinessRunTimeException(ExceptionConstants.USER_LOGIN_NAME_ALREADY_EXISTS_CODE,
@@ -863,10 +936,10 @@ public class UserService {
         StringBuilder userStr = new StringBuilder();
         List<Long> idList = new ArrayList<>();
         for(User user: list) {
-            if(user.getId().equals(user.getTenantId())) {
+            if(user.getEmployeeId().equals(user.getTenantId())) {
                 //租户不能进行禁用
             } else {
-                idList.add(user.getId());
+                idList.add(user.getEmployeeId());
                 userStr.append(user.getLoginName()).append(" ");
             }
         }
@@ -878,7 +951,7 @@ public class UserService {
         }
         if(idList.size()>0) {
             User user = new User();
-            user.setStatus(status);
+            user.setDisabledFlag(status == 0 ? true : false);
             UserExample example = new UserExample();
             example.createCriteria().andIdIn(idList);
             result = userMapper.updateByExampleSelective(user, example);
