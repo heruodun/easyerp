@@ -122,10 +122,10 @@ public class RoleService {
         Role role = JSONObject.parseObject(obj.toJSONString(), Role.class);
         int result=0;
         try{
-            role.setEnabled(true);
+//            role.setEnabled(true);
             result=roleMapper.insertSelective(role);
             logService.insertLog("角色",
-                    new StringBuffer(BusinessConstants.LOG_OPERATION_TYPE_ADD).append(role.getName()).toString(), request);
+                    new StringBuffer(BusinessConstants.LOG_OPERATION_TYPE_ADD).append(role.getRoleName()).toString(), request);
         }catch(Exception e){
             JshException.writeFail(logger, e);
         }
@@ -139,7 +139,7 @@ public class RoleService {
         try{
             result=roleMapper.updateByPrimaryKeySelective(role);
             logService.insertLog("角色",
-                    new StringBuffer(BusinessConstants.LOG_OPERATION_TYPE_EDIT).append(role.getName()).toString(), request);
+                    new StringBuffer(BusinessConstants.LOG_OPERATION_TYPE_EDIT).append(role.getRoleName()).toString(), request);
         }catch(Exception e){
             JshException.writeFail(logger, e);
         }
@@ -193,7 +193,7 @@ public class RoleService {
         sb.append(BusinessConstants.LOG_OPERATION_TYPE_DELETE);
         List<Role> list = getRoleListByIds(ids);
         for(Role role: list){
-            sb.append("[").append(role.getName()).append("]");
+            sb.append("[").append(role.getRoleName()).append("]");
         }
         logService.insertLog("角色", sb.toString(),
                 ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest());
@@ -219,7 +219,7 @@ public class RoleService {
                 ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest());
         List<Long> roleIds = StringUtil.strToLongList(ids);
         Role role = new Role();
-        role.setEnabled(status);
+//        role.setEnabled(status);
         RoleExample example = new RoleExample();
         example.createCriteria().andIdIn(roleIds);
         int result=0;

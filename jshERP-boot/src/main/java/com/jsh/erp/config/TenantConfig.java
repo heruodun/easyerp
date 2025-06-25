@@ -57,7 +57,7 @@ public class TenantConfig {
                     // 这里可以判断是否过滤表
                     if ("jsh_sequence".equals(tableName) || "jsh_function".equals(tableName)
                             || "jsh_platform_config".equals(tableName) || "jsh_tenant".equals(tableName)
-                            || "t_department".equals(tableName)
+                            || "t_department".equals(tableName) || "t_role_data_scope".equals(tableName)
                     ) {
                         res = true;
                     } else {
@@ -88,6 +88,9 @@ public class TenantConfig {
                 } else if ("com.jsh.erp.datasource.mappers.LogMapperEx.insertLogWithUserId".equals(ms.getId())) {
                     return true;
                 } else if ("com.jsh.erp.datasource.mappers.UserBusinessMapperEx.getBasicDataByKeyIdAndType".equals(ms.getId())) {
+                    return true;
+                }
+                else if ("com.jsh.erp.datasource.mappers.RoleMapper.selectRoleByEmployeeId".equals(ms.getId())) {
                     return true;
                 }
                 return false;

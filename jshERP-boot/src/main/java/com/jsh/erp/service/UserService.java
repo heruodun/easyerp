@@ -1,8 +1,7 @@
 package com.jsh.erp.service;
 
 import com.jsh.erp.datasource.entities.*;
-import com.jsh.erp.datasource.mappers.DepartmentMapper;
-import com.jsh.erp.datasource.mappers.TenantMapper;
+import com.jsh.erp.datasource.mappers.*;
 import com.jsh.erp.exception.BusinessParamCheckingException;
 import com.jsh.erp.utils.*;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -11,8 +10,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jsh.erp.constants.BusinessConstants;
 import com.jsh.erp.constants.ExceptionConstants;
-import com.jsh.erp.datasource.mappers.UserMapper;
-import com.jsh.erp.datasource.mappers.UserMapperEx;
 import com.jsh.erp.datasource.vo.TreeNodeEx;
 import com.jsh.erp.exception.BusinessRunTimeException;
 import com.jsh.erp.exception.JshException;
@@ -65,6 +62,8 @@ public class UserService {
     private RedisService redisService;
     @Resource
     private DepartmentMapper departmentMapper;
+    @Resource
+    private RoleMapper roleMapper;
 
     @Value("${tenant.userNumLimit}")
     private Integer userNumLimit;
@@ -108,7 +107,8 @@ public class UserService {
             Long userId = this.getUserId(request);
             if(userId!=null) {
                 UserExample example = new UserExample();
-                example.createCriteria().andStatusEqualTo(BusinessConstants.USER_STATUS_NORMAL).andDeleteFlagNotEqualTo(BusinessConstants.DELETE_FLAG_DELETED);
+                example.createCriteria().andDisabledFlagEqualTo(BusinessConstants.USER_STATUS_NORMAL).
+                        andDeleteFlagNotEqualTo(BusinessConstants.DELETE_FLAG_DELETED);
                 list = userMapper.selectByExample(example);
             }
         }catch(Exception e){
@@ -859,6 +859,23 @@ public class UserService {
             role = roleService.getRoleWithoutTenant(Long.parseLong(roleId));
         }
         return role;
+    }
+
+    public String getPriceLimit(Long userId) throws Exception{
+        String priceLimit = null;
+        List<Role> list = roleMapper.selectRoleByEmployeeId(userId);
+        if(list.size() > 0) {
+            for(Role role : list){
+                if(role == null){
+                    continue;
+                }
+                if(StringUtil.isEmpty(role.getPriceLimit())){
+                    return null;
+                }
+                priceLimit = priceLimit + "," + role.getPriceLimit();
+            }
+        }
+        return priceLimit;
     }
 
     /**

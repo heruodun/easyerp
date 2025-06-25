@@ -5,12 +5,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.jsh.erp.constants.BusinessConstants;
 import com.jsh.erp.constants.ExceptionConstants;
 import com.jsh.erp.datasource.entities.*;
-import com.jsh.erp.datasource.mappers.AccountHeadMapper;
-import com.jsh.erp.datasource.mappers.AccountHeadMapperEx;
-import com.jsh.erp.datasource.mappers.AccountItemMapperEx;
-import com.jsh.erp.datasource.mappers.AccountMapper;
+import com.jsh.erp.datasource.mappers.*;
 import com.jsh.erp.exception.BusinessRunTimeException;
 import com.jsh.erp.exception.JshException;
+import com.jsh.erp.utils.Constants;
 import com.jsh.erp.utils.PageUtils;
 import com.jsh.erp.utils.StringUtil;
 import com.jsh.erp.utils.Tools;
@@ -53,6 +51,10 @@ public class AccountHeadService {
     private AccountItemMapperEx accountItemMapperEx;
     @Resource
     private AccountMapper accountMapper;
+    @Resource
+    private RoleDataScopeDao roleDataScopeDao;
+    @Resource
+    private DataScopeViewService dataScopeViewService;
 
     public AccountHead getAccountHead(long id) throws Exception {
         AccountHead result=null;
@@ -93,7 +95,7 @@ public class AccountHeadService {
                                              String remark, String number, Long inOutItemId) throws Exception{
         List<AccountHeadVo4ListEx> list = new ArrayList<>();
         try{
-            String [] creatorArray = getCreatorArray();
+            String [] creatorArray = dataScopeViewService.getCreatorArray(Constants.DATA_SCOPE_FINANCIAL);
             beginTime = Tools.parseDayToTime(beginTime,BusinessConstants.DAY_FIRST_TIME);
             endTime = Tools.parseDayToTime(endTime,BusinessConstants.DAY_LAST_TIME);
             PageUtils.startPage();
@@ -130,26 +132,6 @@ public class AccountHeadService {
         return list;
     }
 
-    /**
-     * 根据角色类型获取操作员数组
-     * @return
-     * @throws Exception
-     */
-    public String[] getCreatorArray() throws Exception {
-        String creator = "";
-        User user = userService.getCurrentUser();
-        String roleType = userService.getRoleTypeByUserId(user.getEmployeeId()).getType(); //角色类型
-        if(BusinessConstants.ROLE_TYPE_PRIVATE.equals(roleType)) {
-            creator = user.getEmployeeId().toString();
-        } else if(BusinessConstants.ROLE_TYPE_THIS_ORG.equals(roleType)) {
-            creator = orgaUserRelService.getUserIdListByUserId(user.getEmployeeId());
-        }
-        String [] creatorArray=null;
-        if(StringUtil.isNotEmpty(creator)){
-            creatorArray = creator.split(",");
-        }
-        return creatorArray;
-    }
 
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
     public int insertAccountHead(JSONObject obj, HttpServletRequest request) throws Exception{

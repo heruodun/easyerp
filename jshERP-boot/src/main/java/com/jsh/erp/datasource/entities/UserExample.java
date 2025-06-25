@@ -859,6 +859,11 @@ public class UserExample {
             return (Criteria) this;
         }
 
+        public Criteria andDisabledFlagEqualTo(Byte value) {
+            addCriterion("disabled_flag =", value, "disabledFlag");
+            return (Criteria) this;
+        }
+
         public Criteria andStatusNotEqualTo(Byte value) {
             addCriterion("status <>", value, "status");
             return (Criteria) this;

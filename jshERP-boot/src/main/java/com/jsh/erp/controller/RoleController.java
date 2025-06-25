@@ -128,9 +128,9 @@ public class RoleController extends BaseController {
             if (null != dataList) {
                 for (Role role : dataList) {
                     JSONObject item = new JSONObject();
-                    item.put("id", role.getId());
-                    item.put("text", role.getName());
-                    Boolean flag = ubValue.contains("[" + role.getId().toString() + "]");
+                    item.put("id", role.getRoleId());
+                    item.put("text", role.getRoleName());
+                    Boolean flag = ubValue.contains("[" + role.getRoleId().toString() + "]");
                     if (flag) {
                         item.put("checked", true);
                     }

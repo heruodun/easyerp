@@ -199,7 +199,7 @@ public class DepotItemController {
         BaseResponseInfo res = new BaseResponseInfo();
         try {
             Long userId = userService.getUserId(request);
-            String priceLimit = userService.getRoleTypeByUserId(userId).getPriceLimit();
+            String priceLimit = userService.getPriceLimit(userId);
             List<DepotItemVo4WithInfoEx> dataList = new ArrayList<>();
             String billCategory = depotHeadService.getBillCategory(depotHeadService.getDepotHead(headerId).getSubType());
             if(headerId != 0) {
@@ -867,7 +867,7 @@ public class DepotItemController {
                 String beginTime = Tools.firstDayOfMonth(monthList.get(0)) + BusinessConstants.DAY_FIRST_TIME;
                 String endTime = Tools.getNow() + BusinessConstants.DAY_LAST_TIME;
                 List<InOutPriceVo> inOrOutPriceList = depotItemService.inOrOutPriceList(beginTime, endTime);
-                String priceLimit = userService.getRoleTypeByUserId(userId).getPriceLimit();
+                String priceLimit = userService.getPriceLimit(userId);
                 JSONArray buyPriceList = new JSONArray();
                 for (String month : monthList) {
                     JSONObject obj = new JSONObject();

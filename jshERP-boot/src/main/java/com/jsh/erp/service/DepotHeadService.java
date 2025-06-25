@@ -11,10 +11,7 @@ import com.jsh.erp.datasource.mappers.DepotItemMapperEx;
 import com.jsh.erp.datasource.vo.*;
 import com.jsh.erp.exception.BusinessRunTimeException;
 import com.jsh.erp.exception.JshException;
-import com.jsh.erp.utils.ExcelUtils;
-import com.jsh.erp.utils.PageUtils;
-import com.jsh.erp.utils.StringUtil;
-import com.jsh.erp.utils.Tools;
+import com.jsh.erp.utils.*;
 import jxl.Workbook;
 import jxl.write.WritableWorkbook;
 import org.slf4j.Logger;
@@ -76,6 +73,8 @@ public class DepotHeadService {
     DepotItemMapperEx depotItemMapperEx;
     @Resource
     private LogService logService;
+    @Resource
+    private DataScopeViewService dataScopeViewService;
 
     public DepotHead getDepotHead(long id)throws Exception {
         DepotHead result=null;
@@ -105,7 +104,10 @@ public class DepotHeadService {
         try{
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
             Long userId = userService.getUserId(request);
-            String priceLimit = userService.getRoleTypeByUserId(userId).getPriceLimit();
+//            String priceLimit = userService.getRoleTypeByUserId(userId).getPriceLimit();
+
+            String priceLimit = userService.getPriceLimit(userId);
+
             String billCategory = getBillCategory(subType);
             String [] depotArray = getDepotArray(subType);
             String [] creatorArray = getCreatorArray();
@@ -292,11 +294,7 @@ public class DepotHeadService {
      * @throws Exception
      */
     public String[] getCreatorArray() throws Exception {
-        String creator = getCreatorByCurrentUser();
-        String [] creatorArray=null;
-        if(StringUtil.isNotEmpty(creator)){
-            creatorArray = creator.split(",");
-        }
+        String [] creatorArray = dataScopeViewService.getCreatorArray(Constants.DATA_SCOPE_BILL);
         return creatorArray;
     }
 
@@ -355,15 +353,7 @@ public class DepotHeadService {
      * @throws Exception
      */
     public String getCreatorByCurrentUser() throws Exception {
-        String creator = "";
-        User user = userService.getCurrentUser();
-        String roleType = userService.getRoleTypeByUserId(user.getEmployeeId()).getType(); //角色类型
-        if(BusinessConstants.ROLE_TYPE_PRIVATE.equals(roleType)) {
-            creator = user.getEmployeeId().toString();
-        } else if(BusinessConstants.ROLE_TYPE_THIS_ORG.equals(roleType)) {
-            creator = orgaUserRelService.getUserIdListByUserId(user.getEmployeeId());
-        }
-        return creator;
+        return dataScopeViewService.getCreatorStr(Constants.DATA_SCOPE_BILL);
     }
 
     public Map<String, BigDecimal> getFinishDepositMapByNumberList(List<String> numberList) {
@@ -1363,7 +1353,7 @@ public class DepotHeadService {
     public Map<String, Object> getBuyAndSaleStatistics(String today, String monthFirstDay, String yesterdayBegin, String yesterdayEnd,
                                                        String yearBegin, String yearEnd, HttpServletRequest request) throws Exception {
         Long userId = userService.getUserId(request);
-        String priceLimit = userService.getRoleTypeByUserId(userId).getPriceLimit();
+        String priceLimit = userService.getPriceLimit(userId);
         Boolean forceFlag = systemConfigService.getForceApprovalFlag();
         String[] creatorArray = getCreatorArray();
         List<InOutPriceVo> inOutPriceVoList = depotHeadMapperEx.getBuyAndSaleStatisticsList(yearBegin, yearEnd, creatorArray, forceFlag);

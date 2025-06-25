@@ -287,4 +287,12 @@
       delete_flag = #{deleteFlag,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <select id="selectRoleByEmployeeId" resultType="com.jsh.erp.datasource.entities.Role">
+    SELECT t_role.*
+    FROM t_role
+    left join t_role_employee on t_role_employee.role_id = t_role.role_id
+    WHERE t_role_employee.employee_id = #{employeeId}
+  </select>
+
 </mapper>

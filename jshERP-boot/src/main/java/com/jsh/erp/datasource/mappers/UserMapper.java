@@ -27,4 +27,17 @@ public interface UserMapper {
     int updateByPrimaryKeySelective(User record);
 
     int updateByPrimaryKey(User record);
+
+    /**
+     * 获取某个部门的员工Id
+     */
+    List<Long> getEmployeeIdByDepartmentId(@Param("departmentId") Long departmentId, @Param("disabledFlag") Boolean disabledFlag);
+
+    /**
+     * 获取某批部门的员工Id
+     */
+    List<Long> getEmployeeIdByDepartmentIdList(@Param("departmentIds") List<Long> departmentIds,
+                                               @Param("disabledFlag") Boolean disabledFlag);
+
+
 }

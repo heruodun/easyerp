@@ -113,7 +113,7 @@ public class ExcelUtils {
 
 	public static File exportObjectsOneSheet(String fileName, String tip,
 											 String[] names, String title, List<Object[]> objects) throws Exception {
-		File excelFile = new File("/opt/"+ fileName);
+		File excelFile = new File( fileName);
 		WritableWorkbook wtwb = Workbook.createWorkbook(excelFile);
 		WritableSheet sheet = wtwb.createSheet(title, 0);
 		sheet.getSettings().setDefaultColumnWidth(12);

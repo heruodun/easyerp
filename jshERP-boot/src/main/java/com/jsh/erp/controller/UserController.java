@@ -415,7 +415,7 @@ public class UserController extends BaseController {
         try {
             Map<String, Object> data = new HashMap<String, Object>();
             Long userId = userService.getUserId(request);
-            String roleType = userService.getRoleTypeByUserId(userId).getType(); //角色类型
+            String roleType = userService.getRoleTypeByUserId(userId).getRoleType(); //角色类型
             data.put("roleType", roleType);
             res.code = 200;
             res.data = data;

@@ -107,6 +107,35 @@
     ismanager, isystem, status, description, remark, weixin_open_id, tenant_id, delete_flag
   </sql>
 
+  <select id="getEmployeeIdByDepartmentIdList" resultType="java.lang.Long">
+    SELECT employee_id
+    FROM t_employee
+    <where>
+      department_id IN
+      <foreach collection="departmentIds" item="item" open="(" close=")" separator=",">
+        #{item}
+      </foreach>
+      <if test="disabledFlag != null">
+        AND disabled_flag = #{disabledFlag}
+      </if>
+    </where>
+    ORDER BY create_time DESC
+  </select>
+
+
+
+
+  <select id="getEmployeeIdByDepartmentId" resultType="java.lang.Long">
+    SELECT employee_id
+    FROM t_employee
+    <where>
+      department_id = #{departmentId}
+      <if test="disabledFlag != null">
+        AND disabled_flag = #{disabledFlag}
+      </if>
+    </where>
+    ORDER BY create_time DESC
+  </select>
 
   <select id="selectByExample" parameterType="com.jsh.erp.datasource.entities.UserExample" resultMap="BaseResultMap2">
     select

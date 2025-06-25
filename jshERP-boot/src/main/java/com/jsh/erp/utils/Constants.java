@@ -31,4 +31,27 @@ public class Constants {
     //增加了角色等级常量
     public final static String LEVEL="level";
 
+    /**
+     * NOTICE(1, 1, "系统通知", "系统通知数据范围"),
+     * FINANCIAL(2, 2, "财务数据", "系统财务数据范围"),
+     * BILL(3, 3, "账单数据", "系统账单数据范围"),
+     *
+     *
+     * ME(0, 0, "本人"),
+     * DEPARTMENT(1, 5, "本部门"),
+     * DEPARTMENT_AND_SUB(2, 10, "本部门及下属子部门"),
+     * ALL(10, 100, "全部");
+     */
+
+
+    public static final int VIEW_SCOPE_ME = 0;
+    public static final int VIEW_SCOPE_DEPARTMENT = 1;
+    public static final int VIEW_SCOPE_DEPARTMENT_AND_SUB = 2;
+    public static final int VIEW_SCOPE_ALL = 10;
+
+    public static final int DATA_SCOPE_NOTICE = 1;
+    public static final int DATA_SCOPE_FINANCIAL = 2;
+    public static final int DATA_SCOPE_BILL = 3;
+
+
 }

@@ -171,7 +171,7 @@ public class OrganizationController {
     public JSONArray getAllOrganizationTreeByUser(HttpServletRequest request) throws Exception{
         JSONArray arr = new JSONArray();
         Long userId = userService.getUserId(request);
-        String roleType = userService.getRoleTypeByUserId(userId).getType();
+        String roleType = userService.getRoleTypeByUserId(userId).getRoleType();
         if(BusinessConstants.ROLE_TYPE_PUBLIC.equals(roleType)) {
             List<TreeNode> organizationTree = organizationService.getOrganizationTree(null);
             if(organizationTree!=null && organizationTree.size()>0){
