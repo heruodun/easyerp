@@ -1001,7 +1001,7 @@ public class DepotHeadService {
         List<DepotHeadVo4List> resList = new ArrayList<>();
         try{
             Long userId = userService.getUserId(request);
-            String priceLimit = userService.getRoleTypeByUserId(userId).getPriceLimit();
+            String priceLimit = userService.getPriceLimit(userId);
             Map<Long,String> personMap = personService.getPersonMap();
             Map<Long,String> accountMap = accountService.getAccountMap();
             List<DepotHeadVo4List> list = depotHeadMapperEx.getDetailByNumber(number);

@@ -592,7 +592,7 @@ public class MaterialController extends BaseController {
         BaseResponseInfo res = new BaseResponseInfo();
         try {
             Long userId = userService.getUserId(request);
-            String priceLimit = userService.getRoleTypeByUserId(userId).getPriceLimit();
+            String priceLimit = userService.getPriceLimit(userId);
             String[] mpArr = mpList.split(",");
             //支持序列号查询，先根据序列号查询条码，如果查不到就直接查条码
             MaterialExtend materialExtend = materialService.getMaterialExtendBySerialNumber(barCode);

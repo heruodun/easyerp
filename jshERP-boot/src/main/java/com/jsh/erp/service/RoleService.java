@@ -284,7 +284,7 @@ public class RoleService {
      */
     public Object parseMaterialPriceByLimit(BigDecimal price, String type, String emptyInfo, HttpServletRequest request) throws Exception {
         Long userId = userService.getUserId(request);
-        String priceLimit = userService.getRoleTypeByUserId(userId).getPriceLimit();
+        String priceLimit = userService.getPriceLimit(userId);
         if(StringUtil.isNotEmpty(priceLimit)) {
             if("buy".equals(type) && priceLimit.contains("4")) {
                 return emptyInfo;
