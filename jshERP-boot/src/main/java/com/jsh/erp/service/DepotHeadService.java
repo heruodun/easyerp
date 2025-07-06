@@ -1084,6 +1084,10 @@ public class DepotHeadService {
                     dh.setMaterialsList(materialsListMap.get(dh.getId()));
                 }
                 dh.setCreatorName(userService.getUser(dh.getCreator()).getActualName());
+
+                dh.setBillDetailAllPrice(dh.getDiscountLastMoney().toString());
+
+                dh.setBillDetailCnMoney(cn.hutool.core.convert.Convert.digitToChinese(dh.getDiscountLastMoney()));
                 resList.add(dh);
             }
         }catch(Exception e){

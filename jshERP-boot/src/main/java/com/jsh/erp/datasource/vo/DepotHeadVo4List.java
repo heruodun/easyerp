@@ -77,6 +77,33 @@ public class DepotHeadVo4List extends DepotHead{
      */
     private BigDecimal previousDebt;
 
+    /**
+     * 单据明细合计金额
+     */
+    private String billDetailAllPrice;
+
+    /**
+     * 单据明细合计金额大写
+     */
+    private String billDetailCnMoney;
+
+
+    public String getBillDetailAllPrice() {
+        return billDetailAllPrice;
+    }
+
+    public void setBillDetailAllPrice(String billDetailAllPrice) {
+        this.billDetailAllPrice = billDetailAllPrice;
+    }
+
+    public String getBillDetailCnMoney() {
+        return billDetailCnMoney;
+    }
+
+    public void setBillDetailCnMoney(String billDetailCnMoney) {
+        this.billDetailCnMoney = billDetailCnMoney;
+    }
+
     public BigDecimal getPreviousDebt() {
         return previousDebt;
     }
