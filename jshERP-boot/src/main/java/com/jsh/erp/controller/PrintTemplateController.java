@@ -29,6 +29,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.jsh.erp.utils.ResponseJsonUtil.returnJson;
 import static com.jsh.erp.utils.ResponseJsonUtil.returnStr;
@@ -75,9 +76,10 @@ public class PrintTemplateController extends BaseController {
         Long tenantId = user.getTenantId();
         Map<String, Object> objectMap = new HashMap<>();
         PrintTemplate printTemplate = JSONObject.parseObject(obj.toJSONString(), PrintTemplate.class);
-        logger.info("打印模板打印类型："+printTemplate.getPrintType() + "租户ID："+printTemplate.getTenantId()
+        logger.info("打印模板打印类型："+printTemplate.getPrintType() + "，租户ID："+printTemplate.getTenantId()
+                + "，当前用户租户ID：" + tenantId
         );
-        if(printTemplate.getTenantId() != tenantId || printTemplate.getPrintType() == null){
+        if(!Objects.equals(printTemplate.getTenantId(), tenantId) || printTemplate.getPrintType() == null){
             return returnJson(objectMap, ErpInfo.BAD_REQUEST.name, ErpInfo.BAD_REQUEST.code);
         }
         int effectRows = printTemplateService.upsertTemplate(printTemplate);
