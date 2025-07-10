@@ -79,9 +79,9 @@ public class PrintTemplateController extends BaseController {
         logger.info("打印模板打印类型："+printTemplate.getPrintType() + "，租户ID："+printTemplate.getTenantId()
                 + "，当前用户租户ID：" + tenantId
         );
-        if(!Objects.equals(printTemplate.getTenantId(), tenantId) || printTemplate.getPrintType() == null){
-            return returnJson(objectMap, ErpInfo.BAD_REQUEST.name, ErpInfo.BAD_REQUEST.code);
-        }
+//        if(!Objects.equals(printTemplate.getTenantId(), tenantId) || printTemplate.getPrintType() == null){
+//            return returnJson(objectMap, ErpInfo.BAD_REQUEST.name, ErpInfo.BAD_REQUEST.code);
+//        }
         int effectRows = printTemplateService.upsertTemplate(printTemplate);
         boolean insert = effectRows > 0;
         return returnStr(objectMap, insert?  1 : 0);

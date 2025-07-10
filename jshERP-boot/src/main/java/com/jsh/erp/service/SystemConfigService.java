@@ -203,7 +203,7 @@ public class SystemConfigService {
                 }
             }
             if (!isValidExtension) {
-                throw new IllegalArgumentException("Invalid file type");
+                throw new IllegalArgumentException("无效文件类型");
             }
 
             if(orgName.contains(".")){

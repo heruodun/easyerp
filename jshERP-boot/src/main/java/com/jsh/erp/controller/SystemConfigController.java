@@ -191,7 +191,9 @@ public class SystemConfigController extends BaseController {
         try {
             String savePath = "";
             String bizPath = request.getParameter("biz");
-            if ("bill".equals(bizPath) || "financial".equals(bizPath) || "material".equals(bizPath)) {
+            if ("bill".equals(bizPath) || "financial".equals(bizPath) || "material".equals(bizPath)
+                    || "system".equals(bizPath)
+            ) {
                 MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
                 MultipartFile file = multipartRequest.getFile("file");// 获取上传文件对象
                 if(fileUploadType == 1) {
@@ -211,9 +213,16 @@ public class SystemConfigController extends BaseController {
                 res.data = "文件分类错误！";
             }
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            res.code = 500;
-            res.data = "上传失败！";
+            if(e instanceof IllegalArgumentException){
+                logger.error(e.getMessage(), e);
+                res.code = 500;
+                res.data = e.getMessage();
+            }
+            else {
+                logger.error(e.getMessage(), e);
+                res.code = 500;
+                res.data = "上传失败！";
+            }
         }
         return res;
     }

@@ -15,6 +15,10 @@ public class SystemConfig {
 
     private String companyPostCode;
 
+    private String companyLogoUrl;
+
+    private String companyWechatQrcodeUrl;
+
     private String saleAgreement;
 
     private String depotFlag;
@@ -50,6 +54,22 @@ public class SystemConfig {
     private Long tenantId;
 
     private String deleteFlag;
+
+    public String getCompanyLogoUrl() {
+        return companyLogoUrl;
+    }
+
+    public void setCompanyLogoUrl(String companyLogoUrl) {
+        this.companyLogoUrl = companyLogoUrl;
+    }
+
+    public String getCompanyWechatQrcodeUrl() {
+        return companyWechatQrcodeUrl;
+    }
+
+    public void setCompanyWechatQrcodeUrl(String companyWechatQrcodeUrl) {
+        this.companyWechatQrcodeUrl = companyWechatQrcodeUrl;
+    }
 
     public Long getId() {
         return id;

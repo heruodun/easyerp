@@ -9,6 +9,8 @@
     <result column="company_tel" jdbcType="VARCHAR" property="companyTel" />
     <result column="company_fax" jdbcType="VARCHAR" property="companyFax" />
     <result column="company_post_code" jdbcType="VARCHAR" property="companyPostCode" />
+    <result column="company_logo_url" jdbcType="VARCHAR" property="companyLogoUrl" />
+    <result column="company_wechat_qrcode_url" jdbcType="VARCHAR" property="companyWechatQrcodeUrl" />
     <result column="sale_agreement" jdbcType="VARCHAR" property="saleAgreement" />
     <result column="depot_flag" jdbcType="VARCHAR" property="depotFlag" />
     <result column="customer_flag" jdbcType="VARCHAR" property="customerFlag" />
@@ -87,7 +89,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, company_name, company_contacts, company_address, company_tel, company_fax, company_post_code, 
+    id, company_name, company_contacts, company_address, company_tel, company_fax, company_post_code,
+    company_logo_url,company_wechat_qrcode_url,
     sale_agreement, depot_flag, customer_flag, minus_stock_flag, purchase_by_sale_flag, 
     multi_level_approval_flag, multi_bill_type, force_approval_flag, update_unit_price_flag, 
     over_link_bill_flag, in_out_manage_flag, multi_account_flag, move_avg_price_flag, 
@@ -127,7 +130,7 @@
   <insert id="insert" parameterType="com.jsh.erp.datasource.entities.SystemConfig">
     insert into jsh_system_config (id, company_name, company_contacts, 
       company_address, company_tel, company_fax, 
-      company_post_code, sale_agreement, depot_flag, 
+      company_post_code,company_logo_url, company_wechat_qrcode_url, sale_agreement, depot_flag,
       customer_flag, minus_stock_flag, purchase_by_sale_flag, 
       multi_level_approval_flag, multi_bill_type, 
       force_approval_flag, update_unit_price_flag, 
@@ -137,7 +140,9 @@
       )
     values (#{id,jdbcType=BIGINT}, #{companyName,jdbcType=VARCHAR}, #{companyContacts,jdbcType=VARCHAR}, 
       #{companyAddress,jdbcType=VARCHAR}, #{companyTel,jdbcType=VARCHAR}, #{companyFax,jdbcType=VARCHAR}, 
-      #{companyPostCode,jdbcType=VARCHAR}, #{saleAgreement,jdbcType=VARCHAR}, #{depotFlag,jdbcType=VARCHAR}, 
+      #{companyPostCode,jdbcType=VARCHAR},
+      #{companyLogoUrl,jdbcType=VARCHAR}, #{companyWechatQrcodeUrl,jdbcType=VARCHAR},
+      #{saleAgreement,jdbcType=VARCHAR}, #{depotFlag,jdbcType=VARCHAR},
       #{customerFlag,jdbcType=VARCHAR}, #{minusStockFlag,jdbcType=VARCHAR}, #{purchaseBySaleFlag,jdbcType=VARCHAR}, 
       #{multiLevelApprovalFlag,jdbcType=VARCHAR}, #{multiBillType,jdbcType=VARCHAR}, 
       #{forceApprovalFlag,jdbcType=VARCHAR}, #{updateUnitPriceFlag,jdbcType=VARCHAR}, 
@@ -169,6 +174,12 @@
       </if>
       <if test="companyPostCode != null">
         company_post_code,
+      </if>
+      <if test="companyLogoUrl != null">
+        company_logo_url,
+      </if>
+      <if test="companyWechatQrcodeUrl != null">
+        company_wechat_qrcode_url,
       </if>
       <if test="saleAgreement != null">
         sale_agreement,
@@ -247,6 +258,14 @@
       <if test="companyPostCode != null">
         #{companyPostCode,jdbcType=VARCHAR},
       </if>
+      <if test="companyLogoUrl != null">
+        #{companyLogoUrl,jdbcType=VARCHAR},
+      </if>
+
+      <if test="companyWechatQrcodeUrl != null">
+        #{companyWechatQrcodeUrl,jdbcType=VARCHAR},
+      </if>
+
       <if test="saleAgreement != null">
         #{saleAgreement,jdbcType=VARCHAR},
       </if>
@@ -333,6 +352,16 @@
       <if test="record.companyPostCode != null">
         company_post_code = #{record.companyPostCode,jdbcType=VARCHAR},
       </if>
+
+      <if test="record.companyLogoUrl != null">
+        company_logo_url = #{record.companyLogoUrl,jdbcType=VARCHAR},
+      </if>
+
+      <if test="record.companyWechatQrcodeUrl != null">
+        company_wechat_qrcode_url = #{record.companyWechatQrcodeUrl,jdbcType=VARCHAR},
+      </if>
+
+
       <if test="record.saleAgreement != null">
         sale_agreement = #{record.saleAgreement,jdbcType=VARCHAR},
       </if>
@@ -401,6 +430,8 @@
       company_tel = #{record.companyTel,jdbcType=VARCHAR},
       company_fax = #{record.companyFax,jdbcType=VARCHAR},
       company_post_code = #{record.companyPostCode,jdbcType=VARCHAR},
+      company_logo_url = #{record.companyLogoUrl,jdbcType=VARCHAR},
+      company_wechat_qrcode_url = #{record.companyWechatQrcodeUrl,jdbcType=VARCHAR},
       sale_agreement = #{record.saleAgreement,jdbcType=VARCHAR},
       depot_flag = #{record.depotFlag,jdbcType=VARCHAR},
       customer_flag = #{record.customerFlag,jdbcType=VARCHAR},
@@ -444,6 +475,15 @@
       <if test="companyPostCode != null">
         company_post_code = #{companyPostCode,jdbcType=VARCHAR},
       </if>
+
+      <if test="companyLogoUrl != null">
+        company_logo_url = #{companyLogoUrl,jdbcType=VARCHAR},
+      </if>
+
+      <if test="companyWechatQrcodeUrl != null">
+        company_wechat_qrcode_url = #{companyWechatQrcodeUrl,jdbcType=VARCHAR},
+      </if>
+
       <if test="saleAgreement != null">
         sale_agreement = #{saleAgreement,jdbcType=VARCHAR},
       </if>
@@ -509,6 +549,8 @@
       company_tel = #{companyTel,jdbcType=VARCHAR},
       company_fax = #{companyFax,jdbcType=VARCHAR},
       company_post_code = #{companyPostCode,jdbcType=VARCHAR},
+      company_logo_url = #{companyLogoUrl,jdbcType=VARCHAR},
+      company_wechat_qrcode_url = #{companyWechatQrcodeUrl,jdbcType=VARCHAR},
       sale_agreement = #{saleAgreement,jdbcType=VARCHAR},
       depot_flag = #{depotFlag,jdbcType=VARCHAR},
       customer_flag = #{customerFlag,jdbcType=VARCHAR},
