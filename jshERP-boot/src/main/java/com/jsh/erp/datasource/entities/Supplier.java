@@ -1,6 +1,7 @@
 package com.jsh.erp.datasource.entities;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class Supplier {
     private Long id;
@@ -52,6 +53,16 @@ public class Supplier {
     private Long tenantId;
 
     private String deleteFlag;
+
+    private List<Address> addressList;
+
+    public List<Address> getAddressList() {
+        return addressList;
+    }
+
+    public void setAddressList(List<Address> addressList) {
+        this.addressList = addressList;
+    }
 
     public Long getId() {
         return id;

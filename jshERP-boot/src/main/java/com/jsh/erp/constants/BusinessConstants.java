@@ -90,6 +90,7 @@ public class BusinessConstants {
     public static final String SUB_TYPE_RETAIL = "零售";
     public static final String SUB_TYPE_RETAIL_RETURN = "零售退货";
     public static final String SUB_TYPE_SALES_ORDER = "销售订单";
+    public static final String SUB_TYPE_PICK_ORDER = "配货订单";
     public static final String SUB_TYPE_SALES = "销售";
     public static final String SUB_TYPE_SALES_RETURN = "销售退货";
     public static final String SUB_TYPE_TRANSFER = "调拨";

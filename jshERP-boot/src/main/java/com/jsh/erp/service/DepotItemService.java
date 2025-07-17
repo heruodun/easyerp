@@ -594,7 +594,11 @@ public class DepotItemService {
                 } else {
                     if(!BusinessConstants.SUB_TYPE_PURCHASE_APPLY.equals(depotHead.getSubType())
                             && !BusinessConstants.SUB_TYPE_PURCHASE_ORDER.equals(depotHead.getSubType())
-                            && !BusinessConstants.SUB_TYPE_SALES_ORDER.equals(depotHead.getSubType())) {
+                            && !BusinessConstants.SUB_TYPE_SALES_ORDER.equals(depotHead.getSubType())
+                            && !BusinessConstants.SUB_TYPE_PICK_ORDER.equals(depotHead.getSubType())
+                    )
+
+                    {
                         throw new BusinessRunTimeException(ExceptionConstants.DEPOT_HEAD_DEPOT_FAILED_CODE,
                                 String.format(ExceptionConstants.DEPOT_HEAD_DEPOT_FAILED_MSG));
                     }
@@ -1183,6 +1187,12 @@ public class DepotItemService {
             if(BusinessConstants.SUB_TYPE_SALES_ORDER.equals(depotHead.getSubType())) {
                 goToType = BusinessConstants.SUB_TYPE_SALES;
             }
+
+            //配货订单转销售出库
+            if(BusinessConstants.SUB_TYPE_PICK_ORDER.equals(depotHead.getSubType())) {
+                goToType = BusinessConstants.SUB_TYPE_SALES;
+            }
+
             //采购入库转采购退货
             if(BusinessConstants.SUB_TYPE_PURCHASE.equals(depotHead.getSubType())) {
                 goToType = BusinessConstants.SUB_TYPE_PURCHASE_RETURN;

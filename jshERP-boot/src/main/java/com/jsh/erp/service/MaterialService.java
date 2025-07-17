@@ -415,8 +415,15 @@ public class MaterialService {
             if(StringUtil.isNotEmpty(item.getUnit())) {
                 sb.append("(").append(item.getUnit()).append(")");
             }
+            obj.put("id", item.getId());
             obj.put("barCode", item.getBarCode());
             obj.put("materialStr", sb.toString());
+            obj.put("materialName", item.getName());
+            obj.put("materialMnemonic", item.getMnemonic());
+            obj.put("materialStandard", item.getStandard());
+            obj.put("materialModel", item.getModel());
+            obj.put("materialColor", item.getColor());
+            obj.put("materialUnit", item.getUnit());
             arr.add(obj);
         }
         return arr;

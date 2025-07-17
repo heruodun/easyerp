@@ -4,11 +4,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jsh.erp.base.BaseController;
 import com.jsh.erp.base.TableDataInfo;
+import com.jsh.erp.datasource.entities.Address;
 import com.jsh.erp.datasource.entities.Supplier;
-import com.jsh.erp.service.SupplierService;
-import com.jsh.erp.service.SystemConfigService;
-import com.jsh.erp.service.UserService;
-import com.jsh.erp.service.UserBusinessService;
+import com.jsh.erp.service.*;
 import com.jsh.erp.utils.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -48,14 +46,17 @@ public class SupplierController extends BaseController {
 
     @Resource
     private UserService userService;
+    @Resource
+    private AddressService addressService;
 
     @GetMapping(value = "/info")
-    @ApiOperation(value = "根据id获取信息")
+    @ApiOperation(value = "根据id获取信息,不包含已删除")
     public String getList(@RequestParam("id") Long id,
                           HttpServletRequest request) throws Exception {
         Supplier supplier = supplierService.getSupplier(id);
         Map<String, Object> objectMap = new HashMap<>();
         if(supplier != null) {
+            supplier.setAddressList(addressService.getAddressBySupplierId(supplier.getId(), false));
             objectMap.put("info", supplier);
             return returnJson(objectMap, ErpInfo.OK.name, ErpInfo.OK.code);
         } else {
@@ -73,6 +74,10 @@ public class SupplierController extends BaseController {
         String phonenum = StringUtil.getInfo(search, "phonenum");
         String telephone = StringUtil.getInfo(search, "telephone");
         List<Supplier> list = supplierService.select(supplier, type, contacts, phonenum, telephone);
+        for(Supplier s: list){
+            List<Address> addressList = addressService.getAddressBySupplierId(s.getId(), true);
+            s.setAddressList(addressList);
+        }
         return getDataTable(list);
     }
 
@@ -162,6 +167,7 @@ public class SupplierController extends BaseController {
                     if (!customerFlag || flag) {
                         item.put("id", supplier.getId());
                         item.put("supplier", supplier.getSupplier()); //客户名称
+                        item.put("addressList", supplier.getAddressList()); //客户名称
                         dataArray.add(item);
                     }
                 }

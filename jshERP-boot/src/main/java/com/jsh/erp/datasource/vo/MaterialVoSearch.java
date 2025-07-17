@@ -2,6 +2,8 @@ package com.jsh.erp.datasource.vo;
 
 public class MaterialVoSearch {
 
+    private Long id;
+
     private String barCode;
 
     private String name;
@@ -15,6 +17,14 @@ public class MaterialVoSearch {
     private String color;
 
     private String unit;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getBarCode() {
         return barCode;

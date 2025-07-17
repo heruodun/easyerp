@@ -20,6 +20,8 @@ public class DepotHead {
 
     private Long organId;
 
+    private Long addressId;
+
     private Long creator;
 
     private Long accountId;
@@ -130,6 +132,14 @@ public class DepotHead {
 
     public void setOrganId(Long organId) {
         this.organId = organId;
+    }
+
+    public Long getAddressId() {
+        return addressId;
+    }
+
+    public void setAddressId(Long addressId) {
+        this.addressId = addressId;
     }
 
     public Long getCreator() {

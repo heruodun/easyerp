@@ -1,13 +1,12 @@
 package com.jsh.erp.service;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jsh.erp.constants.BusinessConstants;
 import com.jsh.erp.constants.ExceptionConstants;
 import com.jsh.erp.datasource.entities.*;
-import com.jsh.erp.datasource.mappers.DepotHeadMapper;
-import com.jsh.erp.datasource.mappers.DepotHeadMapperEx;
-import com.jsh.erp.datasource.mappers.DepotItemMapperEx;
+import com.jsh.erp.datasource.mappers.*;
 import com.jsh.erp.datasource.vo.*;
 import com.jsh.erp.exception.BusinessRunTimeException;
 import com.jsh.erp.exception.JshException;
@@ -75,6 +74,10 @@ public class DepotHeadService {
     private LogService logService;
     @Resource
     private DataScopeViewService dataScopeViewService;
+    @Resource
+    private AddressMapper addressMapper;
+    @Resource
+    private ProgressMapper progressMapper;
 
     public DepotHead getDepotHead(long id)throws Exception {
         DepotHead result=null;
@@ -133,11 +136,18 @@ public class DepotHeadService {
                 }
                 //通过批量查询去构造map
                 Map<String,BigDecimal> finishDepositMap = getFinishDepositMapByNumberList(numberList);
+                Map<String, Progress> progressMap = getProgressMapByNumberList(numberList);
                 Map<Long,Integer> financialBillNoMap = getFinancialBillNoMapByBillIdList(idList);
                 Map<String,Integer> billSizeMap = getBillSizeMapByLinkNumberList(numberList);
                 Map<Long,String> materialsListMap = findMaterialsListMapByHeaderIdList(idList);
                 Map<Long,BigDecimal> materialCountListMap = getMaterialCountListMapByHeaderIdList(idList);
                 for (DepotHeadVo4List dh : list) {
+                    Address address = addressMapper.selectByPrimaryKey(dh.getAddressId());
+                    if(address != null){
+                        dh.setAddressName(address.getPlace());
+                    }
+                    dh.setUserName(userService.getUser(dh.getCreator()).getActualName());
+
                     if(accountMap!=null && StringUtil.isNotEmpty(dh.getAccountIdList()) && StringUtil.isNotEmpty(dh.getAccountMoneyList())) {
                         String accountStr = accountService.getAccountStrByIdAndMoney(accountMap, dh.getAccountIdList(), dh.getAccountMoneyList());
                         dh.setAccountName(accountStr);
@@ -168,6 +178,9 @@ public class DepotHeadService {
                         dh.setDeposit(BigDecimal.ZERO);
                     } else {
                         dh.setDeposit(roleService.parseBillPriceByLimit(dh.getDeposit(), billCategory, priceLimit, request));
+                    }
+                    if(progressMap != null){
+                        dh.setProgress(progressMap.get(dh.getNumber()));
                     }
                     //已经完成的欠款
                     if(finishDepositMap!=null) {
@@ -281,7 +294,9 @@ public class DepotHeadService {
         String [] depotArray = null;
         if(!BusinessConstants.SUB_TYPE_PURCHASE_APPLY.equals(subType)
                 && !BusinessConstants.SUB_TYPE_PURCHASE_ORDER.equals(subType)
-                && !BusinessConstants.SUB_TYPE_SALES_ORDER.equals(subType)) {
+                && !BusinessConstants.SUB_TYPE_SALES_ORDER.equals(subType)
+                && !BusinessConstants.SUB_TYPE_PICK_ORDER.equals(subType)
+        ) {
             String depotIds = depotService.findDepotStrByCurrentUser();
             depotArray = StringUtil.isNotEmpty(depotIds) ? depotIds.split(",") : null;
         }
@@ -326,6 +341,7 @@ public class DepotHeadService {
         String ubValue = userBusinessService.getUBValueByTypeAndKeyId(type, userId.toString());
         List<Supplier> supplierList = supplierService.findBySelectCus();
         if(BusinessConstants.SUB_TYPE_SALES_ORDER.equals(subType) || BusinessConstants.SUB_TYPE_SALES.equals(subType)
+                || BusinessConstants.SUB_TYPE_PICK_ORDER.equals(subType)
                 ||BusinessConstants.SUB_TYPE_SALES_RETURN.equals(subType) ) {
             //采购订单里面选择销售订单的时候不要过滤
             if(StringUtil.isEmpty(purchaseStatus)) {
@@ -369,6 +385,21 @@ public class DepotHeadService {
             }
         }
         return finishDepositMap;
+    }
+
+    public Map<String, Progress> getProgressMapByNumberList(List<String> numberList) {
+        Map<String,Progress> processMap = new HashMap<>();
+        if(numberList.size()>0) {
+            List<Progress> list = progressMapper.getProgressByNumberList(numberList);
+            if(list!=null && list.size()>0) {
+                for (Progress progress : list) {
+                    if(progress!=null) {
+                        processMap.put(progress.getBillNumber(), progress);
+                    }
+                }
+            }
+        }
+        return processMap;
     }
 
     public Map<String, Integer> getBillSizeMapByLinkNumberList(List<String> numberList) throws Exception {
@@ -1017,6 +1048,10 @@ public class DepotHeadService {
                 Map<String,Integer> billSizeMap = getBillSizeMapByLinkNumberList(numberList);
                 Map<Long,String> materialsListMap = findMaterialsListMapByHeaderIdList(idList);
                 DepotHeadVo4List dh = list.get(0);
+                Address address = addressMapper.selectByPrimaryKey(dh.getAddressId());
+                if(address!=null) {
+                    dh.setAddressName(address.getPlace());
+                }
                 String billCategory = getBillCategory(dh.getSubType());
                 if(accountMap!=null && StringUtil.isNotEmpty(dh.getAccountIdList()) && StringUtil.isNotEmpty(dh.getAccountMoneyList())) {
                     String accountStr = accountService.getAccountStrByIdAndMoney(accountMap, dh.getAccountIdList(), dh.getAccountMoneyList());
@@ -1249,6 +1284,44 @@ public class DepotHeadService {
             /**入库和出库处理单据子表信息*/
             depotItemService.saveDetials(rows,headId, "add",request);
         }
+
+        Address address =  addressMapper.selectByPrimaryKey(depotHead.getAddressId());
+
+        User user = userService.getUser(depotHead.getCreator());
+
+
+        Long savedHeadId = list.get(0).getId();
+
+        List<DepotItemVo4WithInfoEx> dataList = depotItemService.getDetailList(savedHeadId);
+
+        OrderSalesAddForm orderSalesAddForm = new OrderSalesAddForm();
+        orderSalesAddForm.setBillNumber(depotHead.getNumber());
+        orderSalesAddForm.setTenantId(depotHead.getTenantId());
+        if(address!=null){
+            orderSalesAddForm.setAddress(address.getPlace());
+        }
+
+        List<OrderGuigeEntity> orderGuigeEntityList   = new ArrayList<>();
+
+        for(DepotItemVo4WithInfoEx depotItemVo4WithInfoEx:dataList){
+            OrderGuigeEntity orderGuigeEntity = new OrderGuigeEntity();
+            orderGuigeEntity.setGuige(depotItemVo4WithInfoEx.getMName());
+            orderGuigeEntity.setCount(depotItemVo4WithInfoEx.getOperNumber().intValue());
+            orderGuigeEntity.setDanwei(depotItemVo4WithInfoEx.getMaterialUnit());
+            orderGuigeEntityList.add(orderGuigeEntity);
+        }
+
+        orderSalesAddForm.setGuiges(orderGuigeEntityList);
+        orderSalesAddForm.setAddressId(Math.toIntExact(depotHead.getAddressId()));
+        if(user!= null) {
+            orderSalesAddForm.setUserId(depotHead.getCreator());
+            orderSalesAddForm.setUserName(user.getActualName());
+        }
+
+        String res = HttpClient.httpPost("http://127.0.0.1:1024/orderSales/addFS", JSON.toJSONString(orderSalesAddForm));
+        logger.info("请求参数：" + JSON.toJSONString(orderSalesAddForm));
+        logger.info("返回结果：" + res);
+
         logService.insertLog("单据",
                 new StringBuffer(BusinessConstants.LOG_OPERATION_TYPE_ADD).append(depotHead.getNumber()).toString(),
                 ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest());

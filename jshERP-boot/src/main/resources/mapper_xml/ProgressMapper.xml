@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jsh.erp.datasource.mappers.ProgressMapper">
+    <resultMap id="BaseResultMap" type="com.jsh.erp.datasource.entities.Progress">
+        <id column="trace" jdbcType="VARCHAR" property="trace" typeHandler="com.jsh.erp.datasource.mappers.TraceTypeHandler"/>
+    </resultMap>
+
+    <select id="getProgressByNumberList" resultMap="BaseResultMap">
+        select *
+        from t_order_sales dh
+        where 1=1
+        <if test="numberList.size()>0">
+            and dh.bill_number in
+            <foreach collection="numberList" item="item" index="index" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        and ifnull(dh.deleted_flag,'0') !='1'
+    </select>
+
+    <!-- 查看 -->
+    <select id="selectOne" resultMap="BaseResultMap">
+        SELECT * FROM t_order_sales
+        <where>
+            <if test="orderId != null">
+                AND order_id = #{orderId}
+            </if>
+
+            <if test="billNumber != null">
+                AND bill_number = #{billNumber}
+            </if>
+
+            <if test="deletedFlag != null">
+                AND deleted_flag = #{deletedFlag}
+            </if>
+        </where>
+        LIMIT 1
+    </select>
+
+</mapper>

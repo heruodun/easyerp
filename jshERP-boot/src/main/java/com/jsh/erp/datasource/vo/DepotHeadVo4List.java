@@ -1,15 +1,19 @@
 package com.jsh.erp.datasource.vo;
 
 import com.jsh.erp.datasource.entities.DepotHead;
+import com.jsh.erp.datasource.entities.Progress;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 public class DepotHeadVo4List extends DepotHead{
 
     private String projectName;
 
     private String organName;
+
+    private String addressName;
+
+    private Progress progress;
 
     private String userName;
 
@@ -88,6 +92,14 @@ public class DepotHeadVo4List extends DepotHead{
     private String billDetailCnMoney;
 
 
+    public Progress getProgress() {
+        return progress;
+    }
+
+    public void setProgress(Progress progress) {
+        this.progress = progress;
+    }
+
     public String getBillDetailAllPrice() {
         return billDetailAllPrice;
     }
@@ -106,6 +118,14 @@ public class DepotHeadVo4List extends DepotHead{
 
     public BigDecimal getPreviousDebt() {
         return previousDebt;
+    }
+
+    public String getAddressName() {
+        return addressName;
+    }
+
+    public void setAddressName(String addressName) {
+        this.addressName = addressName;
     }
 
     public void setPreviousDebt(BigDecimal previousDebt) {

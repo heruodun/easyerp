@@ -10,6 +10,7 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="oper_time" jdbcType="TIMESTAMP" property="operTime" />
     <result column="organ_id" jdbcType="BIGINT" property="organId" />
+    <result column="address_id" jdbcType="BIGINT" property="addressId" />
     <result column="creator" jdbcType="BIGINT" property="creator" />
     <result column="account_id" jdbcType="BIGINT" property="accountId" />
     <result column="change_amount" jdbcType="DECIMAL" property="changeAmount" />
@@ -94,7 +95,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, type, sub_type, default_number, number, create_time, oper_time, organ_id, creator, 
+    id, type, sub_type, default_number, number, create_time, oper_time, organ_id,address_id, creator,
     account_id, change_amount, back_amount, total_price, pay_type, bill_type, remark, 
     file_name, sales_man, account_id_list, account_money_list, discount, discount_money, 
     discount_last_money, other_money, deposit, status, purchase_status, source, link_number, 
@@ -133,7 +134,7 @@
   <insert id="insert" parameterType="com.jsh.erp.datasource.entities.DepotHead">
     insert into jsh_depot_head (id, type, sub_type, 
       default_number, number, create_time, 
-      oper_time, organ_id, creator, 
+      oper_time, organ_id, address_id, creator,
       account_id, change_amount, back_amount, 
       total_price, pay_type, bill_type, 
       remark, file_name, sales_man, 
@@ -180,6 +181,9 @@
       </if>
       <if test="organId != null">
         organ_id,
+      </if>
+      <if test="addressId != null">
+        address_id,
       </if>
       <if test="creator != null">
         creator,
@@ -278,6 +282,9 @@
       </if>
       <if test="organId != null">
         #{organId,jdbcType=BIGINT},
+      </if>
+      <if test="addressId != null">
+        #{addressId,jdbcType=BIGINT},
       </if>
       <if test="creator != null">
         #{creator,jdbcType=BIGINT},
@@ -386,6 +393,10 @@
       <if test="record.organId != null">
         organ_id = #{record.organId,jdbcType=BIGINT},
       </if>
+
+      <if test="record.addressId != null">
+        address_id = #{record.addressId,jdbcType=BIGINT},
+      </if>
       <if test="record.creator != null">
         creator = #{record.creator,jdbcType=BIGINT},
       </if>
@@ -473,6 +484,7 @@
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       oper_time = #{record.operTime,jdbcType=TIMESTAMP},
       organ_id = #{record.organId,jdbcType=BIGINT},
+      address_id = #{record.addressId,jdbcType=BIGINT},
       creator = #{record.creator,jdbcType=BIGINT},
       account_id = #{record.accountId,jdbcType=BIGINT},
       change_amount = #{record.changeAmount,jdbcType=DECIMAL},
@@ -524,6 +536,9 @@
       </if>
       <if test="organId != null">
         organ_id = #{organId,jdbcType=BIGINT},
+      </if>
+      <if test="addressId != null">
+        address_id = #{addressId,jdbcType=BIGINT},
       </if>
       <if test="creator != null">
         creator = #{creator,jdbcType=BIGINT},
@@ -609,6 +624,7 @@
       create_time = #{createTime,jdbcType=TIMESTAMP},
       oper_time = #{operTime,jdbcType=TIMESTAMP},
       organ_id = #{organId,jdbcType=BIGINT},
+      address_id = #{addressId,jdbcType=BIGINT},
       creator = #{creator,jdbcType=BIGINT},
       account_id = #{accountId,jdbcType=BIGINT},
       change_amount = #{changeAmount,jdbcType=DECIMAL},
