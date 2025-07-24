@@ -27,6 +27,8 @@
     <result column="creator" jdbcType="BIGINT" property="creator" />
     <result column="tenant_id" jdbcType="BIGINT" property="tenantId" />
     <result column="delete_flag" jdbcType="VARCHAR" property="deleteFlag" />
+    <result column="mnemonic" jdbcType="VARCHAR" property="mnemonic" />
+
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -89,7 +91,7 @@
   <sql id="Base_Column_List">
     id, supplier, contacts, phone_num, email, description, isystem, type, enabled, advance_in, 
     begin_need_get, begin_need_pay, all_need_get, all_need_pay, fax, telephone, address, 
-    tax_num, bank_name, account_number, tax_rate, sort, creator, tenant_id, delete_flag
+    tax_num, bank_name, account_number, tax_rate, sort, creator, tenant_id, delete_flag,mnemonic
   </sql>
   <select id="selectByExample" parameterType="com.jsh.erp.datasource.entities.SupplierExample" resultMap="BaseResultMap">
     select
@@ -121,6 +123,21 @@
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
+
+  <select id="getSupplierByParam"  resultMap="BaseResultMap">
+    select *
+    from jsh_supplier m
+    where 1 = 1
+    <if test="q != null and q !=''">
+      <bind name="bindKey" value="'%'+q+'%'"/>
+      and (m.supplier like #{bindKey} or m.mnemonic like #{bindKey})
+    </if>
+    and m.type = #{type}
+    and ifnull(m.delete_flag,'0') !='1'
+    order by m.id desc
+    limit 0,20
+  </select>
+
   <insert id="insert" parameterType="com.jsh.erp.datasource.entities.Supplier">
     insert into jsh_supplier (id, supplier, contacts, 
       phone_num, email, description, 
@@ -130,7 +147,7 @@
       telephone, address, tax_num, 
       bank_name, account_number, tax_rate, 
       sort, creator, tenant_id, 
-      delete_flag)
+      delete_flag, mnemonic)
     values (#{id,jdbcType=BIGINT}, #{supplier,jdbcType=VARCHAR}, #{contacts,jdbcType=VARCHAR}, 
       #{phoneNum,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
       #{isystem,jdbcType=TINYINT}, #{type,jdbcType=VARCHAR}, #{enabled,jdbcType=BIT}, 
@@ -139,9 +156,10 @@
       #{telephone,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{taxNum,jdbcType=VARCHAR}, 
       #{bankName,jdbcType=VARCHAR}, #{accountNumber,jdbcType=VARCHAR}, #{taxRate,jdbcType=DECIMAL}, 
       #{sort,jdbcType=VARCHAR}, #{creator,jdbcType=BIGINT}, #{tenantId,jdbcType=BIGINT}, 
-      #{deleteFlag,jdbcType=VARCHAR})
+      #{deleteFlag,jdbcType=VARCHAR}),
+      #{mnemonic,jdbcType=VARCHAR}),
   </insert>
-  <insert id="insertSelective" parameterType="com.jsh.erp.datasource.entities.Supplier">
+  <insert id="insertSelective" parameterType="com.jsh.erp.datasource.entities.Supplier" useGeneratedKeys="true" keyProperty="id">
     insert into jsh_supplier
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -219,6 +237,9 @@
       <if test="deleteFlag != null">
         delete_flag,
       </if>
+      <if test="mnemonic != null">
+        mnemonic,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -295,6 +316,9 @@
       </if>
       <if test="deleteFlag != null">
         #{deleteFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="mnemonic != null">
+        #{mnemonic,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -382,6 +406,9 @@
       <if test="record.deleteFlag != null">
         delete_flag = #{record.deleteFlag,jdbcType=VARCHAR},
       </if>
+      <if test="record.mnemonic != null">
+        mnemonic = #{record.mnemonic,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -413,7 +440,8 @@
       sort = #{record.sort,jdbcType=VARCHAR},
       creator = #{record.creator,jdbcType=BIGINT},
       tenant_id = #{record.tenantId,jdbcType=BIGINT},
-      delete_flag = #{record.deleteFlag,jdbcType=VARCHAR}
+      delete_flag = #{record.deleteFlag,jdbcType=VARCHAR},
+    mnemonic = #{record.mnemonic,jdbcType=VARCHAR},
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -493,6 +521,9 @@
       <if test="deleteFlag != null">
         delete_flag = #{deleteFlag,jdbcType=VARCHAR},
       </if>
+      <if test="mnemonic != null">
+        mnemonic = #{mnemonic,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -522,6 +553,7 @@
       creator = #{creator,jdbcType=BIGINT},
       tenant_id = #{tenantId,jdbcType=BIGINT},
       delete_flag = #{deleteFlag,jdbcType=VARCHAR}
+    mnemonic = #{mnemonic,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

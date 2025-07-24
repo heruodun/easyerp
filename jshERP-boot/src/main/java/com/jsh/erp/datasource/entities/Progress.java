@@ -8,6 +8,7 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -23,7 +24,7 @@ public class Progress {
     /**
      * 订单编号
      */
-    private Long orderId;
+    private String orderId;
 
     private String billNumber;
 
@@ -75,12 +76,17 @@ public class Progress {
     private Integer type;
 
     /**
+     * 波次ID
+     */
+    private Long waveId;
+
+    /**
      * 创建时间
      */
-    private LocalDateTime createTime;
+    private Date createTime;
 
     /**
      * 修改时间
      */
-    private LocalDateTime updateTime;
+    private Date updateTime;
 }

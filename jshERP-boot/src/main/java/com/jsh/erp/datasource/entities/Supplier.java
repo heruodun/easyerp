@@ -8,6 +8,11 @@ public class Supplier {
 
     private String supplier;
 
+    /**
+     * 助记码
+     */
+    private String mnemonic;
+
     private String contacts;
 
     private String phoneNum;
@@ -62,6 +67,14 @@ public class Supplier {
 
     public void setAddressList(List<Address> addressList) {
         this.addressList = addressList;
+    }
+
+    public String getMnemonic() {
+        return mnemonic;
+    }
+
+    public void setMnemonic(String mnemonic) {
+        this.mnemonic = mnemonic;
     }
 
     public Long getId() {

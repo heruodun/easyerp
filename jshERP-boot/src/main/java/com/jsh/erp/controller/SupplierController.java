@@ -144,6 +144,35 @@ public class SupplierController extends BaseController {
     }
 
     /**
+     * 根据关键词查找客户信息
+     * @param q
+     * @param request
+     * @return
+     */
+    @GetMapping(value = "/getSupplierByParam")
+    @ApiOperation(value = "根据关键词查找客户信息")
+    public BaseResponseInfo getSupplierByParam(@RequestParam("q") String q,
+                                               @RequestParam(value ="type") String type,
+                                               HttpServletRequest request) throws Exception{
+        BaseResponseInfo res = new BaseResponseInfo();
+        try {
+            List<Supplier> supplierList = supplierService.getSupplierByParam(q, type);
+            for(Supplier supplier:supplierList){
+                if(supplier.getMnemonic()!=null) {
+                    supplier.setSupplier(supplier.getSupplier() + "(" + supplier.getMnemonic() + ")");
+                }
+            }
+            res.code = 200;
+            res.data = supplierList;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            res.code = 500;
+            res.data = "获取数据失败";
+        }
+        return res;
+    }
+
+    /**
      * 查找客户信息-下拉框
      * @param request
      * @return

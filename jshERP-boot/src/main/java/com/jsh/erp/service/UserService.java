@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
+import static com.jsh.erp.utils.Tools.getUUID_32;
+
 @Service
 public class UserService {
     private Logger logger = LoggerFactory.getLogger(UserService.class);
@@ -670,6 +672,7 @@ public class UserService {
             tenantObj.put("userNumLimit", ue.getUserNumLimit());
             tenantObj.put("expireTime", ue.getExpireTime());
             tenantObj.put("remark", ue.getRemark());
+            tenantObj.put("tag", getUUID_32());
             Tenant tenant = JSONObject.parseObject(tenantObj.toJSONString(), Tenant.class);
             tenant.setCreateTime(new Date());
             if(tenant.getUserNumLimit()==null) {

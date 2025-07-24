@@ -51,6 +51,8 @@ public class SupplierService {
     private UserBusinessService userBusinessService;
     @Resource
     private UserBusinessMapper userBusinessMapper;
+    @Resource
+    private AddressMapper addressMapper;
 
     public Supplier getSupplier(long id)throws Exception {
         Supplier result=null;
@@ -150,10 +152,16 @@ public class SupplierService {
         try{
             supplier.setEnabled(true);
             User userInfo=userService.getCurrentUser();
+            supplier.setMnemonic(PinYinUtil.getFirstLettersLo(supplier.getSupplier()));
             supplier.setCreator(userInfo==null?null:userInfo.getEmployeeId());
             result=supplierMapper.insertSelective(supplier);
             //新增客户时给当前用户和租户自动授权
             setUserCustomerPermission(request, supplier);
+            Address address = new Address();
+            address.setSupplierId(supplier.getId());
+            address.setPlace(supplier.getAddress());
+            address.setType(supplier.getType());
+            addressMapper.insertSelective( address);
             logService.insertLog("商家",
                     new StringBuffer(BusinessConstants.LOG_OPERATION_TYPE_ADD).append(supplier.getSupplier()).toString(),request);
         }catch(Exception e){
@@ -165,15 +173,40 @@ public class SupplierService {
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
     public int updateSupplier(JSONObject obj, HttpServletRequest request)throws Exception {
         Supplier supplier = JSONObject.parseObject(obj.toJSONString(), Supplier.class);
+        Supplier oldSupplier = supplierMapper.selectByPrimaryKey(supplier.getId());
+        if(oldSupplier == null){
+            throw new BusinessRunTimeException(ExceptionConstants.SUPPLIER_EDIT_FAILED_CODE,
+                    ExceptionConstants.SUPPLIER_EDIT_FAILED_MSG);
+        }
         if(supplier.getBeginNeedPay() == null) {
             supplier.setBeginNeedPay(BigDecimal.ZERO);
         }
         if(supplier.getBeginNeedGet() == null) {
             supplier.setBeginNeedGet(BigDecimal.ZERO);
         }
+        if(supplier.getSupplier() != null){
+            supplier.setMnemonic(PinYinUtil.getFirstLettersLo(supplier.getSupplier()));
+        }
         int result=0;
         try{
             result=supplierMapper.updateByPrimaryKeySelective(supplier);
+            AddressExample addressExample = new AddressExample();
+            addressExample.createCriteria().andPlaceEqualTo(oldSupplier.getAddress()).
+                    andSupplierIdEqualTo(oldSupplier.getId()).andTypeEqualTo(oldSupplier.getType());
+
+            List<Address> list = addressMapper.selectByExample(addressExample);
+            if(list != null && list.size() > 0) {
+                Address address = list.get(0);
+                address.setPlace(supplier.getAddress());
+                addressMapper.updateByPrimaryKeySelective(address);
+            }
+            else {
+                Address address = new Address();
+                address.setSupplierId(supplier.getId());
+                address.setPlace(supplier.getAddress());
+                address.setType(supplier.getType());
+                addressMapper.insertSelective( address);
+            }
             logService.insertLog("商家",
                     new StringBuffer(BusinessConstants.LOG_OPERATION_TYPE_EDIT).append(supplier.getSupplier()).toString(), request);
         }catch(Exception e){
@@ -298,6 +331,10 @@ public class SupplierService {
             JshException.readFail(logger, e);
         }
         return list;
+    }
+
+    public List<Supplier> getSupplierByParam( String q, String type) {
+       return supplierMapper.getSupplierByParam(q, type);
     }
 
     public List<Supplier> findBySelectSup()throws Exception {
@@ -459,6 +496,7 @@ public class SupplierService {
                 Supplier s = new Supplier();
                 s.setType(type);
                 s.setSupplier(supplierName);
+                s.setMnemonic(PinYinUtil.getFirstLettersLo(supplierName));
                 s.setContacts(ExcelUtils.getContent(src, i, 1));
                 s.setTelephone(ExcelUtils.getContent(src, i, 2));
                 s.setPhoneNum(ExcelUtils.getContent(src, i, 3));
@@ -495,6 +533,7 @@ public class SupplierService {
                 Supplier s = new Supplier();
                 s.setType(type);
                 s.setSupplier(supplierName);
+                s.setMnemonic(PinYinUtil.getFirstLettersLo(supplierName));
                 s.setContacts(ExcelUtils.getContent(src, i, 1));
                 s.setTelephone(ExcelUtils.getContent(src, i, 2));
                 s.setPhoneNum(ExcelUtils.getContent(src, i, 3));
@@ -518,6 +557,7 @@ public class SupplierService {
         Map<String, Object> data = new HashMap<>();
         try {
             for(Supplier supplier: mList) {
+                supplier.setMnemonic(PinYinUtil.getFirstLettersLo(supplier.getSupplier()));
                 SupplierExample example = new SupplierExample();
                 example.createCriteria().andSupplierEqualTo(supplier.getSupplier()).andTypeEqualTo(type).andDeleteFlagNotEqualTo(BusinessConstants.DELETE_FLAG_DELETED);
                 List<Supplier> list= supplierMapper.selectByExample(example);

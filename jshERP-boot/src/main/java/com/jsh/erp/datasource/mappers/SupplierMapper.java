@@ -18,6 +18,9 @@ public interface SupplierMapper {
 
     List<Supplier> selectByExample(SupplierExample example);
 
+    List<Supplier> getSupplierByParam(@Param("q") String q, @Param("type") String type);
+
+
     Supplier selectByPrimaryKey(Long id);
 
     int updateByExampleSelective(@Param("record") Supplier record, @Param("example") SupplierExample example);

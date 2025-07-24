@@ -23,6 +23,16 @@ public class Tenant {
 
     private String deleteFlag;
 
+    private String tag;
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+
     public Long getId() {
         return id;
     }

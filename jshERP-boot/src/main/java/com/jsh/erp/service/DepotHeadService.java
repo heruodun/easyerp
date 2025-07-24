@@ -394,7 +394,7 @@ public class DepotHeadService {
             if(list!=null && list.size()>0) {
                 for (Progress progress : list) {
                     if(progress!=null) {
-                        processMap.put(progress.getBillNumber(), progress);
+                        processMap.put(progress.getOrderId(), progress);
                     }
                 }
             }
@@ -1296,7 +1296,7 @@ public class DepotHeadService {
 
         OrderSalesAddForm orderSalesAddForm = new OrderSalesAddForm();
         orderSalesAddForm.setBillNumber(depotHead.getNumber());
-        orderSalesAddForm.setTenantId(depotHead.getTenantId());
+        orderSalesAddForm.setTenantId(userInfo.getTenantId());
         if(address!=null){
             orderSalesAddForm.setAddress(address.getPlace());
         }

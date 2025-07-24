@@ -11,6 +11,7 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="expire_time" jdbcType="TIMESTAMP" property="expireTime" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="tag" jdbcType="VARCHAR" property="tag" />
     <result column="delete_flag" jdbcType="VARCHAR" property="deleteFlag" />
   </resultMap>
   <sql id="Example_Where_Clause">
@@ -73,7 +74,7 @@
   </sql>
   <sql id="Base_Column_List">
     id, tenant_id, login_name, user_num_limit, type, enabled, create_time, expire_time, 
-    remark, delete_flag
+    remark, delete_flag,tag
   </sql>
   <select id="selectByExample" parameterType="com.jsh.erp.datasource.entities.TenantExample" resultMap="BaseResultMap">
     select
@@ -109,11 +110,11 @@
     insert into jsh_tenant (id, tenant_id, login_name, 
       user_num_limit, type, enabled, 
       create_time, expire_time, remark, 
-      delete_flag)
+      delete_flag,tag)
     values (#{id,jdbcType=BIGINT}, #{tenantId,jdbcType=BIGINT}, #{loginName,jdbcType=VARCHAR}, 
       #{userNumLimit,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR}, #{enabled,jdbcType=BIT}, 
       #{createTime,jdbcType=TIMESTAMP}, #{expireTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}, 
-      #{deleteFlag,jdbcType=VARCHAR})
+      #{deleteFlag,jdbcType=VARCHAR}, #{tag,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.jsh.erp.datasource.entities.Tenant">
     insert into jsh_tenant
@@ -148,6 +149,9 @@
       <if test="deleteFlag != null">
         delete_flag,
       </if>
+      <if test="tag != null">
+        tag,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -179,6 +183,9 @@
       </if>
       <if test="deleteFlag != null">
         #{deleteFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="tag != null">
+        #{tag,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>

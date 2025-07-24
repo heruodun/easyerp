@@ -10,7 +10,7 @@
         from t_order_sales dh
         where 1=1
         <if test="numberList.size()>0">
-            and dh.bill_number in
+            and dh.order_id in
             <foreach collection="numberList" item="item" index="index" separator="," open="(" close=")">
                 #{item}
             </foreach>

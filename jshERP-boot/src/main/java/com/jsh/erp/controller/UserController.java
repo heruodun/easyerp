@@ -529,6 +529,7 @@ public class UserController extends BaseController {
             data.put("userCurrentNum", userCurrentNum);
             data.put("userNumLimit", tenant.getUserNumLimit());
             data.put("tenantId", tenant.getTenantId());
+            data.put("tag", tenant.getTag());
             res.code = 200;
             res.data = data;
         } catch (Exception e) {
