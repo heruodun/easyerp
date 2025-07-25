@@ -555,14 +555,27 @@ public class SupplierService {
                 ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest());
         BaseResponseInfo info = new BaseResponseInfo();
         Map<String, Object> data = new HashMap<>();
+        User userInfo=userService.getCurrentUser();
         try {
             for(Supplier supplier: mList) {
                 supplier.setMnemonic(PinYinUtil.getFirstLettersLo(supplier.getSupplier()));
                 SupplierExample example = new SupplierExample();
                 example.createCriteria().andSupplierEqualTo(supplier.getSupplier()).andTypeEqualTo(type).andDeleteFlagNotEqualTo(BusinessConstants.DELETE_FLAG_DELETED);
                 List<Supplier> list= supplierMapper.selectByExample(example);
+
                 if(list.size() <= 0) {
+                    supplier.setCreator(userInfo==null?null:userInfo.getEmployeeId());
                     supplierMapper.insertSelective(supplier);
+                    Address address = new Address();
+                    address.setSupplierId(supplier.getId());
+                    String place = supplier.getAddress();
+                    if(StringUtil.isEmpty( place)){
+                        //如果地址传入为空，则取supplier name
+                        place = supplier.getSupplier();
+                    }
+                    address.setPlace(place);
+                    address.setType(supplier.getType());
+                    addressMapper.insertSelective( address);
                     //新增客户时给当前用户和租户自动授权
                     setUserCustomerPermission(request, supplier);
                 } else {
