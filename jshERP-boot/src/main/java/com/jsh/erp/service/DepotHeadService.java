@@ -1297,6 +1297,7 @@ public class DepotHeadService {
         OrderSalesAddForm orderSalesAddForm = new OrderSalesAddForm();
         orderSalesAddForm.setBillNumber(depotHead.getNumber());
         orderSalesAddForm.setTenantId(userInfo.getTenantId());
+        orderSalesAddForm.setAddressId(Math.toIntExact(depotHead.getAddressId()));
         if(address!=null){
             orderSalesAddForm.setAddress(address.getPlace());
         }
